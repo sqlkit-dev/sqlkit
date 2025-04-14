@@ -1,4 +1,4 @@
-import { SqlExecutor } from "../types/common";
+import { SqlExecutor } from "../types";
 import { toSnakeCase } from "../utils";
 import { BaseQueryBuilder } from "./base";
 

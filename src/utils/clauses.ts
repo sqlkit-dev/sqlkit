@@ -1,4 +1,4 @@
-import { Join, OrderBy, SimpleWhere, WhereCondition } from "../types/query";
+import { Join, OrderBy, SimpleWhere, WhereCondition } from "../types";
 import { toSnakeCase } from "./formatting";
 
 /**

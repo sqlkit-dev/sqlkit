@@ -1,4 +1,4 @@
-import { SqlExecutor } from "../types/common";
+import { SqlExecutor } from "../types";
 
 export abstract class BaseQueryBuilder<T> {
   protected constructor(

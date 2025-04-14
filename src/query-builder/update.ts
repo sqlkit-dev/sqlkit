@@ -1,5 +1,5 @@
-import { SqlExecutor } from "../types/common";
-import { UpdatePayload, WhereCondition } from "../types/query";
+import { SqlExecutor } from "../types";
+import { UpdatePayload, WhereCondition } from "../types";
 import { buildSetClause, buildWhereClause } from "../utils";
 import { BaseQueryBuilder } from "./base";
 
