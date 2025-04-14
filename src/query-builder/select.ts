@@ -1,10 +1,10 @@
-import { SqlExecutor } from "../types/common";
+import { SqlExecutor } from "../types";
 import {
   PaginatedResult,
   PaginationMeta,
   PaginationOptions,
-} from "../types/pagination";
-import { Join, OrderBy, QueryPayload, WhereCondition } from "../types/query";
+} from "../types";
+import { Join, OrderBy, QueryPayload, WhereCondition } from "../types";
 import {
   buildJoinClause,
   buildOrderByClause,
@@ -93,8 +93,6 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
       ${limit ? `LIMIT ${limit}` : ""} ${offset ? `OFFSET ${offset}` : ""};
     `;
 
-    console.log(sql);
-
     return { sql, values };
   }
 
@@ -108,7 +106,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
     this.offset(offset);
 
     // Execute the main query for data
-    const result = await this.execute();
+    const result = await this.commit();
     const nodes = result.rows as T[];
 
     // Execute count query for pagination metadata

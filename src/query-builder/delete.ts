@@ -1,6 +1,6 @@
-import { SqlExecutor } from "../types/common";
-import { WhereCondition } from "../types/query";
-import { buildWhereClause } from "../utils/clauses";
+import { SqlExecutor } from "../types";
+import { WhereCondition } from "../types";
+import { buildWhereClause } from "../utils";
 import { BaseQueryBuilder } from "./base";
 
 export class DeleteQueryBuilder<T> extends BaseQueryBuilder<T> {
@@ -36,8 +36,6 @@ export class DeleteQueryBuilder<T> extends BaseQueryBuilder<T> {
       ${whereClause ? `WHERE ${whereClause}` : ""}
       RETURNING ${returning};
     `;
-    console.log(sql);
-    console.log(values);
     return { sql, values };
   }
 }

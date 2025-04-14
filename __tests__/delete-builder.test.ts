@@ -1,5 +1,5 @@
 import { DeleteQueryBuilder, SqlExecutor } from "../src";
-import { SimpleWhere, CompositeWhere } from "../src/types/query";
+import { SimpleWhere, CompositeWhere } from "../src";
 
 // Mock SqlExecutor
 const mockExecutor: SqlExecutor = {
@@ -26,7 +26,7 @@ describe("DeleteQueryBuilder", () => {
     it("should build correct SQL for basic delete", () => {
       const result = builder.build();
 
-      expect(result.sql).toContain("DELETE FROM users");
+      expect(result.sql).toContain(`DELETE FROM "users"`);
       expect(result.sql).toContain("RETURNING *");
       expect(result.values).toEqual([]);
     });
@@ -34,7 +34,7 @@ describe("DeleteQueryBuilder", () => {
     it("should build correct SQL for delete with specific returning columns", () => {
       const result = builder.returning(["id", "name"]).build();
 
-      expect(result.sql).toContain("DELETE FROM users");
+      expect(result.sql).toContain(`DELETE FROM "users"`);
       expect(result.sql).toContain("RETURNING id, name");
       expect(result.values).toEqual([]);
     });
@@ -50,7 +50,7 @@ describe("DeleteQueryBuilder", () => {
 
       const result = builder.where(where).build();
 
-      expect(result.sql).toContain("DELETE FROM users");
+      expect(result.sql).toContain(`DELETE FROM "users"`);
       expect(result.sql).toContain(`WHERE "users"."age" > $1`);
       expect(result.sql).toContain("RETURNING *");
       expect(result.values).toEqual([18]);
