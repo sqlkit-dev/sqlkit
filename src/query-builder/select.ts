@@ -92,6 +92,8 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
       ${limit ? `LIMIT ${limit}` : ""} ${offset ? `OFFSET ${offset}` : ""};
     `;
 
+    console.log(sql);
+
     return { sql, values };
   }
 

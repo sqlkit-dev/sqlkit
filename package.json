@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsup src/index.ts --minify --sourcemap",
     "dev": "tsup --watch",
-    "test": "jest",
+    "test": "jest --runInBand",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "docs": "typedoc --out docs src",
@@ -28,8 +28,12 @@
     "typescript"
   ],
   "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/pg": "^8.11.12",
     "jest": "^29.7.0",
+    "pg": "^8.14.1",
     "prettier": "^3.5.3",
+    "ts-jest": "^29.3.2",
     "tsup": "^8.4.0",
     "typedoc": "^0.28.2"
   }
