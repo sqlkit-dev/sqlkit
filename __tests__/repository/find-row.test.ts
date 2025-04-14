@@ -1,6 +1,6 @@
 import { Repository } from "../../src/repository/repository";
 import { eq, and, gt, like } from "../../src";
-import { executor, setupTestTables, cleanupTestData } from "../setup";
+import { executor, setupTestTables, cleanupTestData } from "../../test-setup";
 
 interface User {
   id: number;

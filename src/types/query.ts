@@ -8,7 +8,10 @@ export type Operator =
   | "like"
   | "ilike"
   | "in"
-  | "not in";
+  | "not in"
+  | "between"
+  | "~"
+  | "~*";
 
 export interface SimpleWhere<T> {
   key: keyof T;
@@ -19,6 +22,8 @@ export interface SimpleWhere<T> {
 export interface CompositeWhere<T> {
   AND?: Array<WhereCondition<T>>;
   OR?: Array<WhereCondition<T>>;
+  NOT?: WhereCondition<T>;
+  XOR?: Array<WhereCondition<T>>;
 }
 
 export type WhereCondition<T> = SimpleWhere<T> | CompositeWhere<T>;
@@ -26,6 +31,7 @@ export type WhereCondition<T> = SimpleWhere<T> | CompositeWhere<T>;
 export interface OrderBy<T> {
   key: keyof T;
   direction: "asc" | "desc";
+  nulls?: "first" | "last";
 }
 
 export interface Join<T, F> {

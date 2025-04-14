@@ -1,6 +1,6 @@
 import { Repository } from "../../src/repository/repository";
 import { eq, gt, and, like } from "../../src";
-import { executor, setupTestTables, cleanupTestData } from "../setup";
+import { executor, setupTestTables, cleanupTestData } from "../../test-setup";
 
 interface User {
   id: number;
@@ -28,9 +28,9 @@ describe("Repository count", () => {
       ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25]
     );
 
-    const result = await repository.count(eq("id", 1));
+    const result = await repository.count(like("name", "%Doe%"));
 
-    expect(result).toBe(1);
+    expect(result).toBe(2);
   });
 
   it("should count rows with condition", async () => {
@@ -41,7 +41,6 @@ describe("Repository count", () => {
     );
 
     const result = await repository.count(gt("age", 25));
-    console.log({result})
 
     expect(result).toBe(1);
   });
