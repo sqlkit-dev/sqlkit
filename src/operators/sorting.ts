@@ -1,4 +1,4 @@
-import { OrderBy } from "../types/query";
+import { OrderBy } from "../types";
 
 // Ascending order
 export function asc<T>(key: keyof T): OrderBy<T> {

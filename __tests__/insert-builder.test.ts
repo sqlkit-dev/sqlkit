@@ -1,4 +1,4 @@
-import {InsertQueryBuilder, SqlExecutor} from "../src";
+import { InsertQueryBuilder, SqlExecutor } from "../src";
 
 // Mock SqlExecutor
 const mockExecutor: SqlExecutor = {

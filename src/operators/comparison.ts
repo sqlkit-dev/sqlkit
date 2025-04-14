@@ -1,4 +1,4 @@
-import { SimpleWhere } from "../types/query";
+import { SimpleWhere } from "../types";
 
 // Equal
 export function eq<T, K extends keyof T>(key: K, value: T[K]): SimpleWhere<T> {

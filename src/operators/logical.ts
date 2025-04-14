@@ -1,4 +1,4 @@
-import { CompositeWhere, WhereCondition } from "../types/query";
+import { CompositeWhere, WhereCondition } from "../types";
 
 // Logical AND
 export function and<T>(

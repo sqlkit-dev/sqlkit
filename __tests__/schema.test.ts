@@ -1,5 +1,12 @@
-import {Table} from "../src/schema";
-import {integer, serial, text, timestamp, uuid, varchar} from "../src/types/column-type";
+import { Table } from "../src/schema";
+import {
+  integer,
+  serial,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from "../src/types/column-type";
 
 // Define test interfaces
 interface User {
@@ -41,7 +48,7 @@ describe("Schema and Table", () => {
       table.column("id", uuid()).primaryKey();
       table.column("name", varchar());
 
-      const sql = table.createTableSql()
+      const sql = table.createTableSql();
       expect(sql).toContain(`UUID PRIMARY KEY NOT NULL`);
     });
 
@@ -76,14 +83,18 @@ describe("Schema and Table", () => {
       // );
 
       const sql = table.createTableSql();
-      expect(sql).toContain(`"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`);
+      expect(sql).toContain(
+        `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`
+      );
       expect(sql).toContain(`"createdAt" TIMESTAMP DEFAULT 'now()'`);
     });
 
     it("should create a table with foreign key references", () => {
       const table = new Table<Post>("posts");
       table.column("id", uuid()).primaryKey().$defaultUUID();
-      table.column("authorId", uuid()).references({table: "users", column: "id", onDelete: 'CASCADE'});
+      table
+        .column("authorId", uuid())
+        .references({ table: "users", column: "id", onDelete: "CASCADE" });
 
       const sql = table.createTableSql();
       expect(sql).toContain('"authorId" UUID REFERENCES users(id)');
@@ -96,9 +107,9 @@ describe("Schema and Table", () => {
       table.column("email", varchar()).unique().notNull();
       table.column("age", integer());
       table
-          .column("createdAt", timestamp())
-          .default("CURRENT_TIMESTAMP")
-          .notNull();
+        .column("createdAt", timestamp())
+        .default("CURRENT_TIMESTAMP")
+        .notNull();
 
       // CREATE TABLE IF NOT EXISTS users (
       //   "id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
@@ -108,13 +119,16 @@ describe("Schema and Table", () => {
       //   "createdAt" TIMESTAMP NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
       // );
       const sql = table.createTableSql();
-      expect(sql).toContain(`"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`);
+      expect(sql).toContain(
+        `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`
+      );
       expect(sql).toContain(`"name" VARCHAR(255) NOT NULL`);
       expect(sql).toContain(`"email" VARCHAR(255) NOT NULL UNIQUE`);
       expect(sql).toContain(`"age" INTEGER`);
-      expect(sql).toContain(`"createdAt" TIMESTAMP NOT NULL DEFAULT 'CURRENT_TIMESTAMP'`);
+      expect(sql).toContain(
+        `"createdAt" TIMESTAMP NOT NULL DEFAULT 'CURRENT_TIMESTAMP'`
+      );
     });
-
 
     it("should handle complex table relationships", () => {
       const usersTable = new Table<User>("users");
@@ -128,12 +142,9 @@ describe("Schema and Table", () => {
       postsTable.column("authorId", uuid()).notNull().references({
         table: "users",
         column: "id",
-        onDelete: 'CASCADE'
+        onDelete: "CASCADE",
       });
-      postsTable
-        .column("createdAt", timestamp())
-        .$defaultNOW()
-        .notNull();
+      postsTable.column("createdAt", timestamp()).$defaultNOW().notNull();
 
       const postsSql = postsTable.createTableSql();
 
@@ -145,8 +156,12 @@ describe("Schema and Table", () => {
       //   "createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'
       // );
 
-      expect(postsSql).toContain(`"authorId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE`);
-      expect(postsSql).toContain(`"createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'`);
+      expect(postsSql).toContain(
+        `"authorId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE`
+      );
+      expect(postsSql).toContain(
+        `"createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'`
+      );
     });
   });
 });
