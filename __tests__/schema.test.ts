@@ -1,5 +1,5 @@
 import {Table} from "../src/schema";
-import {integer, serial, timestamp, uuid, varchar} from "../src/types/column-type";
+import {integer, serial, text, timestamp, uuid, varchar} from "../src/types/column-type";
 
 // Define test interfaces
 interface User {
@@ -70,8 +70,14 @@ describe("Schema and Table", () => {
       table.column("id", uuid()).primaryKey().$defaultUUID();
       table.column("createdAt", timestamp()).default("now()");
 
+      // CREATE TABLE IF NOT EXISTS users (
+      //   "id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+      //   "createdAt" TIMESTAMP DEFAULT 'now()'
+      // );
+
       const sql = table.createTableSql();
-      expect(sql).toContain('"createdAt" TIMESTAMP DEFAULT now()');
+      expect(sql).toContain(`"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`);
+      expect(sql).toContain(`"createdAt" TIMESTAMP DEFAULT 'now()'`);
     });
 
     it("should create a table with foreign key references", () => {
@@ -82,65 +88,65 @@ describe("Schema and Table", () => {
       const sql = table.createTableSql();
       expect(sql).toContain('"authorId" UUID REFERENCES users(id)');
     });
-    //
-    // it("should create a table with all constraints combined", () => {
-    //   const table = new Table<User>("users");
-    //   table.column("id", "UUID").primaryKey();
-    //   table.column("name", "VARCHAR(255)").notNull();
-    //   table.column("email", "VARCHAR(255)").unique().notNull();
-    //   table.column("age", "INTEGER");
-    //   table
-    //     .column("createdAt", "TIMESTAMP")
-    //     .default("CURRENT_TIMESTAMP")
-    //     .notNull();
-    //
-    //   const sql = table.toString();
-    //   expect(sql).toContain('"id" UUID PRIMARY KEY');
-    //   expect(sql).toContain('"name" VARCHAR(255) NOT NULL');
-    //   expect(sql).toContain('"email" VARCHAR(255) UNIQUE NOT NULL');
-    //   expect(sql).toContain('"age" INTEGER');
-    //   expect(sql).toContain(
-    //     '"createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL'
-    //   );
-    // });
-    //
-    // it("should handle complex table relationships", () => {
-    //   const usersTable = new Table<User>("users");
-    //   usersTable.column("id", "UUID").primaryKey();
-    //   usersTable.column("name", "VARCHAR(255)").notNull();
-    //
-    //   const postsTable = new Table<Post>("posts");
-    //   postsTable.column("id", "UUID").primaryKey();
-    //   postsTable.column("title", "VARCHAR(255)").notNull();
-    //   postsTable.column("content", "TEXT");
-    //   postsTable.column("authorId", "UUID").notNull().references("users", "id");
-    //   postsTable
-    //     .column("createdAt", "TIMESTAMP")
-    //     .default("CURRENT_TIMESTAMP")
-    //     .notNull();
-    //
-    //   const postsSql = postsTable.toString();
-    //   expect(postsSql).toContain(
-    //     '"authorId" UUID NOT NULL REFERENCES users(id)'
-    //   );
-    //   expect(postsSql).toContain(
-    //     '"createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL'
-    //   );
-    // });
-    //
-    // it("should handle different default value types", () => {
-    //   const table = new Table<any>("test");
-    //   table.column("id", "UUID").primaryKey();
-    //   table.column("stringDefault", "VARCHAR(255)").default("default value");
-    //   table.column("numberDefault", "INTEGER").default(42);
-    //   table.column("nullDefault", "VARCHAR(255)").default(null);
-    //
-    //   const sql = table.toString();
-    //   expect(sql).toContain(
-    //     "\"stringDefault\" VARCHAR(255) DEFAULT 'default value'"
-    //   );
-    //   expect(sql).toContain('"numberDefault" INTEGER DEFAULT 42');
-    //   expect(sql).toContain('"nullDefault" VARCHAR(255) DEFAULT NULL');
-    // });
+
+    it("should create a table with all constraints combined", () => {
+      const table = new Table<User>("users");
+      table.column("id", uuid()).primaryKey().$defaultUUID();
+      table.column("name", varchar()).notNull();
+      table.column("email", varchar()).unique().notNull();
+      table.column("age", integer());
+      table
+          .column("createdAt", timestamp())
+          .default("CURRENT_TIMESTAMP")
+          .notNull();
+
+      // CREATE TABLE IF NOT EXISTS users (
+      //   "id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+      //   "name" VARCHAR(255) NOT NULL,
+      //   "email" VARCHAR(255) NOT NULL UNIQUE,
+      //   "age" INTEGER,
+      //   "createdAt" TIMESTAMP NOT NULL DEFAULT 'CURRENT_TIMESTAMP'
+      // );
+      const sql = table.createTableSql();
+      expect(sql).toContain(`"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`);
+      expect(sql).toContain(`"name" VARCHAR(255) NOT NULL`);
+      expect(sql).toContain(`"email" VARCHAR(255) NOT NULL UNIQUE`);
+      expect(sql).toContain(`"age" INTEGER`);
+      expect(sql).toContain(`"createdAt" TIMESTAMP NOT NULL DEFAULT 'CURRENT_TIMESTAMP'`);
+    });
+
+
+    it("should handle complex table relationships", () => {
+      const usersTable = new Table<User>("users");
+      usersTable.column("id", uuid()).primaryKey();
+      usersTable.column("name", varchar()).notNull();
+
+      const postsTable = new Table<Post>("posts");
+      postsTable.column("id", uuid()).primaryKey();
+      postsTable.column("title", varchar()).notNull();
+      postsTable.column("content", text());
+      postsTable.column("authorId", uuid()).notNull().references({
+        table: "users",
+        column: "id",
+        onDelete: 'CASCADE'
+      });
+      postsTable
+        .column("createdAt", timestamp())
+        .$defaultNOW()
+        .notNull();
+
+      const postsSql = postsTable.createTableSql();
+
+      // CREATE TABLE IF NOT EXISTS posts (
+      //   "id" UUID PRIMARY KEY NOT NULL,
+      //   "title" VARCHAR(255) NOT NULL,
+      //   "content" TEXT,
+      //   "authorId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      //   "createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'
+      // );
+
+      expect(postsSql).toContain(`"authorId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE`);
+      expect(postsSql).toContain(`"createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'`);
+    });
   });
 });
