@@ -84,8 +84,8 @@ describe("DeleteQueryBuilder", () => {
 
       const result = builder.where(where).build();
 
-      expect(result.sql).toContain("DELETE FROM users");
-      expect(result.sql).toContain("WHERE (users.age > $1 OR users.name = $2)");
+      expect(result.sql).toContain(`DELETE FROM "users"`);
+      expect(result.sql).toContain(`WHERE ("users"."age" > $1 OR "users"."name" = $2)`);
       expect(result.sql).toContain("RETURNING *");
       expect(result.values).toEqual([18, "John"]);
     });
@@ -113,9 +113,9 @@ describe("DeleteQueryBuilder", () => {
 
       const result = builder.where(where).build();
 
-      expect(result.sql).toContain("DELETE FROM users");
+      expect(result.sql).toContain(`DELETE FROM "users"`);
       expect(result.sql).toContain(
-        "WHERE (users.age > $1 AND (users.name = $2 OR users.name = $3))"
+        `WHERE ("users"."age" > $1 AND ("users"."name" = $2 OR "users"."name" = $3))`
       );
       expect(result.sql).toContain("RETURNING *");
       expect(result.values).toEqual([18, "John", "Jane"]);
@@ -149,9 +149,9 @@ describe("DeleteQueryBuilder", () => {
         .returning(["id", "name", "email"])
         .build();
 
-      expect(result.sql).toContain("DELETE FROM users");
+      expect(result.sql).toContain(`DELETE FROM "users"`);
       expect(result.sql).toContain(
-        "WHERE (users.age > $1 AND (users.name = $2 OR users.name = $3))"
+        `WHERE ("users"."age" > $1 AND ("users"."name" = $2 OR "users"."name" = $3))`
       );
       expect(result.sql).toContain("RETURNING id, name, email");
       expect(result.values).toEqual([18, "John", "Jane"]);
