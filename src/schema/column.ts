@@ -1,13 +1,15 @@
-export class Column<T> {
+
+export class Column {
   private _nullable: boolean = true;
   private _primaryKey: boolean = false;
+  private _generateUUID: boolean = false;
   private _unique: boolean = false;
   private _default?: any;
-  private _references?: { table: string; column: string };
+  private _references?: { table: string; column: string; onDelete?: 'CASCADE' | 'SET NULL' | 'NO ACTION' | 'RESTRICT' | 'SET DEFAULT' };
 
   constructor(
-    public readonly name: string,
-    public readonly type: string
+      public readonly name: string,
+      public readonly type: string
   ) {}
 
   notNull(): this {
@@ -31,8 +33,23 @@ export class Column<T> {
     return this;
   }
 
-  references(table: string, column: string = "id"): this {
-    this._references = { table, column };
+  $defaultUUID(): this {
+    // @ts-ignore
+    this._generateUUID = true;
+    return this;
+  }
+
+  $defaultNOW(): this {
+    this._default = `now()`;
+    return this;
+  }
+
+  references({table, column = "id", onDelete}: {
+    table: string,
+    column?: string,
+    onDelete?: "CASCADE" | "SET NULL" | "NO ACTION" | "RESTRICT" | "SET DEFAULT"
+  }): this {
+    this._references = { table, column, onDelete };
     return this;
   }
 
@@ -61,8 +78,12 @@ export class Column<T> {
       }
     }
 
+    if (this._generateUUID) {
+      definition += " DEFAULT gen_random_uuid()";
+    }
+
     if (this._references) {
-      definition += ` REFERENCES ${this._references.table}(${this._references.column})`;
+      definition += ` REFERENCES ${this._references.table}(${this._references.column}) ON DELETE ${this._references.onDelete ?? 'SET NULL'}`;
     }
 
     return definition;
