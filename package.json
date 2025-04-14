@@ -1,0 +1,36 @@
+{
+  "name": "tinyorm",
+  "version": "1.0.0",
+  "description": "A lightweight SQL builder for TypeScript",
+  "license": "ISC",
+  "author": {
+    "name": "KingRayhan",
+    "url": "https://www.rayhan.dev"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "scripts": {
+    "build": "tsup src/index.ts --minify --sourcemap",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "docs": "typedoc --out docs src",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "sql",
+    "query builder",
+    "orm",
+    "database",
+    "typescript"
+  ],
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "prettier": "^3.5.3",
+    "tsup": "^8.4.0",
+    "typedoc": "^0.28.2"
+  }
+}
