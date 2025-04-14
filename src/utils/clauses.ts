@@ -108,7 +108,7 @@ const processSimpleCondition = <T>(
 /**
  * Builds an ORDER BY clause for SQL queries
  */
-export const buildOrderByClause = <T>(orderBy?: Array<OrderBy<T>>): string => {
+export const buildOrderByClause = <T>(orderBy?: Array<OrderBy<T>>, baseTableName?: string): string => {
   if (!orderBy || orderBy.length === 0) {
     return ""; // No order by clause
   }
@@ -126,7 +126,7 @@ export const buildOrderByClause = <T>(orderBy?: Array<OrderBy<T>>): string => {
     // Add NULLS LAST for better sorting behavior
     const nullsOrder = safeDirection === "DESC" ? "NULLS LAST" : "NULLS FIRST";
 
-    return `${safeColumn} ${safeDirection} ${nullsOrder}`;
+    return `"${baseTableName}".${safeColumn} ${safeDirection} ${nullsOrder}`;
   });
 
   return `ORDER BY ${orderByConditions.join(", ")}`;
@@ -136,7 +136,8 @@ export const buildOrderByClause = <T>(orderBy?: Array<OrderBy<T>>): string => {
  * Builds JOIN clauses for SQL queries
  */
 export const buildJoinClause = <T>(
-  joins?: Array<Join<T, any>>
+  joins?: Array<Join<T, any>>,
+  baseTableName?: string
 ): { joinConditionClause: string; joinSelectClause: string[] } => {
   if (!joins || joins.length === 0) {
     return {
@@ -150,7 +151,7 @@ export const buildJoinClause = <T>(
     const alias = join.as || join.table;
     const foreignField = join.on.foreignField as any;
     const localField = join.on.localField as any;
-    return `${joinType} JOIN "${join.table}" AS "${alias}" ON "${alias}"."${foreignField}" = "${localField}"`;
+    return `${joinType} JOIN "${join.table}" AS "${alias}" ON "${alias}"."${foreignField}" = "${baseTableName}"."${localField}"`;
   });
 
   const joinSelectClause = joins

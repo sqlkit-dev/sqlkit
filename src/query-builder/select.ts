@@ -73,9 +73,10 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
       this.tableName
     );
 
-    const orderByClause = buildOrderByClause(this.payload.orderBy);
+    const orderByClause = buildOrderByClause(this.payload.orderBy, this.tableName);
     const { joinConditionClause, joinSelectClause } = buildJoinClause(
-      this.payload.joins
+      this.payload.joins,
+        this.tableName
     );
 
     // Build the SQL query with LIMIT, OFFSET, and ORDER BY

@@ -134,7 +134,7 @@ describe("SelectQueryBuilder", () => {
       const result = builder.join(join).build();
 
       expect(result.sql).toContain(
-        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "roleId"`
+        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`
       );
       expect(result.values).toEqual([]);
     });
@@ -153,9 +153,9 @@ describe("SelectQueryBuilder", () => {
       const result = builder.join(join).build();
 
       expect(result.sql).toContain(
-        "LEFT JOIN roles ON users.role_id = roles.id"
+        `LEFT JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`
       );
-      expect(result.sql).toContain("roles.name,roles.description");
+      expect(result.sql).toContain(`json_build_object('name', "roles"."name", 'description', "roles"."description") AS roles`);
       expect(result.values).toEqual([]);
     });
   });
@@ -169,7 +169,7 @@ describe("SelectQueryBuilder", () => {
 
       const result = builder.orderBy(orderBy).build();
 
-      expect(result.sql).toContain("ORDER BY users.name ASC");
+      expect(result.sql).toContain(`ORDER BY "users"."name" ASC`);
       expect(result.values).toEqual([]);
     });
 
@@ -181,7 +181,7 @@ describe("SelectQueryBuilder", () => {
 
       const result = builder.orderBy(orderBy).build();
 
-      expect(result.sql).toContain("ORDER BY users.name ASC, users.age DESC");
+      expect(result.sql).toContain(`ORDER BY "users"."name" ASC NULLS FIRST, "users"."age" DESC NULLS LAST`);
       expect(result.values).toEqual([]);
     });
   });
