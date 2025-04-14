@@ -34,6 +34,8 @@ export class Repository<T> {
     if (payload?.orderBy) builder.orderBy(payload.orderBy);
     if (payload?.limit) builder.limit(payload.limit);
     if (payload?.offset) builder.offset(payload.offset);
+    // console.log(builder.build().sql);
+    // console.log(builder.build().values);
     const result = await builder.commit();
     return result.rows;
   }

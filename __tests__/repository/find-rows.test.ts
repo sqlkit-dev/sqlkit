@@ -1,36 +1,7 @@
-import { Repository } from "../../src/repository/repository";
-import {
-  and,
-  asc,
-  between,
-  desc,
-  eq,
-  gt,
-  gte,
-  ilike,
-  inArray,
-  iregexp,
-  isNotNull,
-  isNull,
-  like,
-  lt,
-  lte,
-  neq,
-  not,
-  notInArray,
-  nullsFirst,
-  nullsLast,
-  or,
-  regexp,
-  xor,
-} from "../../src";
-import {
-  cleanupTestData,
-  DomainUser,
-  executor,
-  setupTestTables,
-} from "../../test-setup";
-import { faker } from "@faker-js/faker";
+import {Repository} from "../../src/repository/repository";
+import {between, eq, gt, gte, ilike, iregexp, isNotNull, isNull, like, lt, lte, neq, regexp,} from "../../src";
+import {cleanupTestData, DomainUser, executor, setupTestTables,} from "../../test-setup";
+import {faker} from "@faker-js/faker";
 
 describe("Repository findRows", () => {
   let repository: Repository<DomainUser>;
@@ -76,7 +47,7 @@ describe("Repository findRows", () => {
 
   describe("Comparison Operators", () => {
     it("should find rows with eq operator", async () => {
-      const users = await createTestUsers(10);
+      const users = await createTestUsers(5);
       const targetUser = users[0];
 
       const result = await repository.findRows({
@@ -87,173 +58,150 @@ describe("Repository findRows", () => {
       expect(result[0].email).toBe(targetUser.email);
     });
 
-    // it("should find rows with neq operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const targetUser = users[0];
-    //
-    //   const result = await repository.findRows({
-    //     where: neq("email", targetUser.email),
-    //   });
-    //
-    //   expect(result).toHaveLength(2);
-    //   expect(result.every((user) => user.email !== targetUser.email)).toBe(
-    //     true
-    //   );
-    // });
-    //
-    // it("should find rows with gt operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const minAge = 30;
-    //
-    //   const result = await repository.findRows({
-    //     where: gt("age", minAge),
-    //   });
-    //
-    //   expect(result.every((user) => user.age! > minAge)).toBe(true);
-    // });
-    //
-    // it("should find rows with gte operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const minAge = 30;
-    //
-    //   const result = await repository.findRows({
-    //     where: gte("age", minAge),
-    //   });
-    //
-    //   expect(result.every((user) => user.age! >= minAge)).toBe(true);
-    // });
-    //
-    // it("should find rows with lt operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const maxAge = 40;
-    //
-    //   const result = await repository.findRows({
-    //     where: lt("age", maxAge),
-    //   });
-    //
-    //   expect(result.every((user) => user.age! < maxAge)).toBe(true);
-    // });
-    //
-    // it("should find rows with lte operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const maxAge = 40;
-    //
-    //   const result = await repository.findRows({
-    //     where: lte("age", maxAge),
-    //   });
-    //
-    //   expect(result.every((user) => user.age! <= maxAge)).toBe(true);
-    // });
-    //
-    // it("should find rows with like operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const searchTerm = "john";
-    //
-    //   const result = await repository.findRows({
-    //     where: like("name", `%${searchTerm}%`),
-    //   });
-    //
-    //   expect(
-    //     result.every((user) => user.name.toLowerCase().includes(searchTerm))
-    //   ).toBe(true);
-    // });
-    //
-    // it("should find rows with ilike operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const searchTerm = "JOHN";
-    //
-    //   const result = await repository.findRows({
-    //     where: ilike("name", `%${searchTerm}%`),
-    //   });
-    //
-    //   expect(
-    //     result.every((user) =>
-    //       user.name.toLowerCase().includes(searchTerm.toLowerCase())
-    //     )
-    //   ).toBe(true);
-    // });
-    //
-    // it("should find rows with inArray operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const targetRoles = ["admin", "user"];
-    //
-    //   const result = await repository.findRows({
-    //     where: inArray("role", targetRoles),
-    //   });
-    //
-    //   expect(result.every((user) => targetRoles.includes(user.role!))).toBe(
-    //     true
-    //   );
-    // });
-    //
-    // it("should find rows with notInArray operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const excludedRoles = ["admin"];
-    //
-    //   const result = await repository.findRows({
-    //     where: notInArray("role", excludedRoles),
-    //   });
-    //
-    //   expect(result.every((user) => !excludedRoles.includes(user.role!))).toBe(
-    //     true
-    //   );
-    // });
-    //
-    // it("should find rows with isNull operator", async () => {
-    //   const users = await createTestUsers(3);
-    //
-    //   const result = await repository.findRows({
-    //     where: isNull("bio"),
-    //   });
-    //
-    //   expect(result.every((user) => user.bio === null)).toBe(true);
-    // });
-    //
-    // it("should find rows with isNotNull operator", async () => {
-    //   const users = await createTestUsers(3);
-    //
-    //   const result = await repository.findRows({
-    //     where: isNotNull("bio"),
-    //   });
-    //
-    //   expect(result.every((user) => user.bio !== null)).toBe(true);
-    // });
-    //
-    // it("should find rows with between operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const minAge = 25;
-    //   const maxAge = 35;
-    //
-    //   const result = await repository.findRows({
-    //     where: between("age", minAge, maxAge),
-    //   });
-    //
-    //   expect(
-    //     result.every((user) => user.age! >= minAge && user.age! <= maxAge)
-    //   ).toBe(true);
-    // });
-    //
-    // it("should find rows with regexp operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const pattern = "^[A-Z]"; // Names starting with uppercase letter
-    //
-    //   const result = await repository.findRows({
-    //     where: regexp("name", pattern),
-    //   });
-    //
-    //   expect(result.every((user) => /^[A-Z]/.test(user.name))).toBe(true);
-    // });
-    //
-    // it("should find rows with iregexp operator", async () => {
-    //   const users = await createTestUsers(3);
-    //   const pattern = "^[a-z]"; // Names starting with any letter (case insensitive)
-    //
-    //   const result = await repository.findRows({
-    //     where: iregexp("name", pattern),
-    //   });
-    //
-    //   expect(result.every((user) => /^[a-z]/i.test(user.name))).toBe(true);
-    // });
+    it("should find rows with neq operator", async () => {
+      const users = await createTestUsers(5);
+      const targetUser = users[0];
+
+      const result = await repository.findRows({
+        where: neq("email", targetUser.email),
+      });
+
+      expect(result).toHaveLength(4);
+      expect(result.every((user) => user.email !== targetUser.email)).toBe(
+          true
+      );
+    });
+
+    it("should find rows with gt operator", async () => {
+      await createTestUsers(3);
+      const minAge = 30;
+
+      const result = await repository.findRows({
+        where: gt("age", minAge),
+      });
+
+      expect(result.every((user) => user.age! > minAge)).toBe(true);
+    });
+
+    it("should find rows with gte operator", async () => {
+      await createTestUsers(3);
+      const minAge = 30;
+
+      const result = await repository.findRows({
+        where: gte("age", minAge),
+      });
+
+      expect(result.every((user) => user.age! >= minAge)).toBe(true);
+    });
+
+    it("should find rows with lt operator", async () => {
+      await createTestUsers(3);
+      const maxAge = 40;
+
+      const result = await repository.findRows({
+        where: lt("age", maxAge),
+      });
+
+      expect(result.every((user) => user.age! < maxAge)).toBe(true);
+    });
+
+    it("should find rows with lte operator", async () => {
+      const users = await createTestUsers(3);
+      const maxAge = 40;
+
+      const result = await repository.findRows({
+        where: lte("age", maxAge),
+      });
+
+      expect(result.every((user) => user.age! <= maxAge)).toBe(true);
+    });
+
+    it("should find rows with like operator", async () => {
+      const users = await createTestUsers(3);
+      const searchTerm = "john";
+
+      const result = await repository.findRows({
+        where: like("name", `%${searchTerm}%`),
+      });
+
+      expect(
+          result.every((user) => user.name.toLowerCase().includes(searchTerm))
+      ).toBe(true);
+    });
+
+    it("should find rows with ilike operator", async () => {
+      const users = await createTestUsers(3);
+      const searchTerm = "JOHN";
+
+      const result = await repository.findRows({
+        where: ilike("name", `%${searchTerm}%`),
+      });
+
+      expect(
+          result.every((user) =>
+              user.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+      ).toBe(true);
+    });
+
+    // TODO: write test for inArray operator
+    // TODO: write test for notInArray operator
+
+    it("should find rows with isNull operator", async () => {
+      await createTestUsers(3);
+
+      const result = await repository.findRows({
+        where: isNull("bio"),
+      });
+
+      expect(result.every((user) => user.bio === null)).toBe(true);
+    });
+
+    it("should find rows with isNotNull operator", async () => {
+      await createTestUsers(3);
+
+      const result = await repository.findRows({
+        where: isNotNull("bio"),
+      });
+
+      expect(result.every((user) => user.bio !== null)).toBe(true);
+    });
+
+    it("should find rows with between operator", async () => {
+      await createTestUsers(3);
+      const minAge = 25;
+      const maxAge = 35;
+
+      const result = await repository.findRows({
+        where: between("age", minAge, maxAge),
+      });
+
+      expect(
+          result.every((user) => user.age! >= minAge && user.age! <= maxAge)
+      ).toBe(true);
+    });
+
+    it("should find rows with regexp operator", async () => {
+      const users = await createTestUsers(3);
+      const pattern = "^[A-Z]"; // Names starting with uppercase letter
+
+      const result = await repository.findRows({
+        where: regexp("name", pattern),
+      });
+
+      expect(result.every((user) => /^[A-Z]/.test(user.name))).toBe(true);
+    });
+
+    it("should find rows with iregexp operator", async () => {
+      const users = await createTestUsers(3);
+      const pattern = "^[a-z]"; // Names starting with any letter (case insensitive)
+
+      const result = await repository.findRows({
+        where: iregexp("name", pattern),
+      });
+
+      expect(result.every((user) => /^[a-z]/i.test(user.name))).toBe(true);
+    });
   });
 
   // describe("Logical Operators", () => {

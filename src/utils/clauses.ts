@@ -77,6 +77,11 @@ const processSimpleCondition = <T>(
 
   if (!key) return ""; // Skip if key is missing
 
+  if (operator === "between" && Array.isArray(value)) {
+    const [min, max] = value;
+    return `"${tableName}"."${key.toString()}" between ${min} AND ${max}`;
+  }
+
   // Handle arrays for IN and NOT IN operators
   if ((operator === "in" || operator === "not in") && Array.isArray(value)) {
     if (value.length === 0) {
