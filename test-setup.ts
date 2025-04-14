@@ -1,6 +1,12 @@
-import {Pool} from "pg";
-import {PostgresAdapter, Table} from "./src";
-import {integer, text, timestamp, uuid, varchar} from "./src/types/column-type";
+import { Pool } from "pg";
+import { PostgresAdapter, Table } from "./src";
+import {
+  integer,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from "./src/types/column-type";
 
 // Test database configuration
 const TEST_DB_CONFIG = {
@@ -27,7 +33,6 @@ export async function setupTestTables() {
   userTable.column("bio", text());
   userTable.column("created_at", timestamp()).$defaultNOW();
 
-
   const postTable = new Table<any>("posts");
   postTable.column("id", uuid()).primaryKey().$defaultUUID();
   postTable.column("title", varchar()).notNull();
@@ -35,7 +40,7 @@ export async function setupTestTables() {
   postTable.column("author_id", uuid()).notNull().references({
     table: "users",
     column: "id",
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE",
   });
 
   await pool.query(`
@@ -58,4 +63,23 @@ export async function cleanupTestData() {
     TRUNCATE TABLE users CASCADE;
     TRUNCATE TABLE posts CASCADE;
   `);
+}
+
+// domain models
+
+export interface DomainUser {
+  id: string;
+  name: string;
+  email: string;
+  age?: number;
+  bio?: string;
+  created_at: Date;
+}
+
+export interface DomainPost {
+  id: string;
+  title: string;
+  content: string;
+  author_id: string;
+  author?: DomainUser;
 }
