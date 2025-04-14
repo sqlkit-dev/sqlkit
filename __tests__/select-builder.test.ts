@@ -1,5 +1,4 @@
-import { SelectQueryBuilder, SqlExecutor } from "../src";
-import { Join, OrderBy, SimpleWhere, CompositeWhere } from "../src/types/query";
+import {CompositeWhere, Join, OrderBy, SelectQueryBuilder, SimpleWhere, SqlExecutor} from "../src";
 
 // Mock SqlExecutor
 const mockExecutor: SqlExecutor = {

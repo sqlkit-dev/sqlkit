@@ -32,11 +32,12 @@ export class DeleteQueryBuilder<T> extends BaseQueryBuilder<T> {
     const returning = this.returningColumns.join(", ");
 
     const sql = `
-      DELETE FROM ${this.tableName}
+      DELETE FROM "${this.tableName}"
       ${whereClause ? `WHERE ${whereClause}` : ""}
       RETURNING ${returning};
     `;
-
+    console.log(sql);
+    console.log(values);
     return { sql, values };
   }
 }
