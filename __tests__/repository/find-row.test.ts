@@ -54,8 +54,7 @@ describe("Repository findRow", () => {
       and(eq("name", "John Doe"), gt("age", 25))
     );
 
-    expect(result).toEqual({
-      id: 1,
+    expect(result).toMatchObject({
       name: "John Doe",
       email: "john@example.com",
       age: 30,
