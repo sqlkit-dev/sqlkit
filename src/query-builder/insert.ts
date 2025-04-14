@@ -44,7 +44,7 @@ export class InsertQueryBuilder<T> extends BaseQueryBuilder<T> {
     const values = Object.values(data);
 
     const returning = this.returningColumns
-      .map((col) => (typeof col === "string" ? `"${col}"` : "*"))
+      .map((col) => (typeof col === "string" ? col : "*"))
       .join(", ");
 
     const sql = `
@@ -52,8 +52,6 @@ export class InsertQueryBuilder<T> extends BaseQueryBuilder<T> {
       VALUES (${placeholders})
       RETURNING ${returning};
     `;
-
-    console.log(JSON.stringify({ sql, values }, null, 2));
 
     return { sql, values };
   }
