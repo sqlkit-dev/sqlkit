@@ -56,22 +56,22 @@ describe("SelectQueryBuilder", () => {
 
       const result = builder.where(where).build();
 
-      expect(result.sql).toContain("WHERE users.age > $1");
+      expect(result.sql).toContain(`WHERE "users"."age" > $1`);
       expect(result.values).toEqual([18]);
     });
 
     it("should build correct SQL for composite AND condition", () => {
       const where: CompositeWhere<User> = {
         AND: [
-          { key: "age", operator: ">", value: 18 } as SimpleWhere<User>,
-          { key: "name", operator: "=", value: "John" } as SimpleWhere<User>,
+          { key: "age", operator: ">", value: 18 },
+          { key: "name", operator: "=", value: "John" },
         ],
       };
 
       const result = builder.where(where).build();
 
       expect(result.sql).toContain(
-        "WHERE (users.age > $1 AND users.name = $2)"
+        `WHERE ("users"."age" > $1 AND "users"."name" = $2)`
       );
       expect(result.values).toEqual([18, "John"]);
     });
@@ -86,7 +86,7 @@ describe("SelectQueryBuilder", () => {
 
       const result = builder.where(where).build();
 
-      expect(result.sql).toContain("WHERE (users.age > $1 OR users.name = $2)");
+      expect(result.sql).toContain(`WHERE ("users"."age" > $1 OR "users"."name" = $2)`);
       expect(result.values).toEqual([18, "John"]);
     });
 
@@ -100,21 +100,21 @@ describe("SelectQueryBuilder", () => {
                 key: "name",
                 operator: "=",
                 value: "John",
-              } as SimpleWhere<User>,
+              },
               {
                 key: "name",
                 operator: "=",
                 value: "Jane",
-              } as SimpleWhere<User>,
+              },
             ],
-          } as CompositeWhere<User>,
+          }
         ],
       };
 
       const result = builder.where(where).build();
 
       expect(result.sql).toContain(
-        "WHERE (users.age > $1 AND (users.name = $2 OR users.name = $3))"
+        `WHERE ("users"."age" > $1 AND ("users"."name" = $2 OR "users"."name" = $3))`
       );
       expect(result.values).toEqual([18, "John", "Jane"]);
     });
@@ -134,7 +134,7 @@ describe("SelectQueryBuilder", () => {
       const result = builder.join(join).build();
 
       expect(result.sql).toContain(
-        "INNER JOIN roles ON users.role_id = roles.id"
+        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "roleId"`
       );
       expect(result.values).toEqual([]);
     });
