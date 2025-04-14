@@ -241,13 +241,13 @@ describe("SelectQueryBuilder", () => {
         .offset(20)
         .build();
 
-      expect(result.sql).toContain("SELECT users.name,users.email");
-      expect(result.sql).toContain("FROM users");
+      expect(result.sql).toContain(`SELECT "users"."name","users"."email"`);
+      expect(result.sql).toContain(`FROM "users"`);
       expect(result.sql).toContain(
-        "INNER JOIN roles ON users.role_id = roles.id"
+        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`
       );
-      expect(result.sql).toContain("WHERE users.age > $1");
-      expect(result.sql).toContain("ORDER BY users.name ASC");
+      expect(result.sql).toContain(`WHERE "users"."age" > $1`);
+      expect(result.sql).toContain(`ORDER BY "users"."name" ASC NULLS FIRST`);
       expect(result.sql).toContain("LIMIT 10");
       expect(result.sql).toContain("OFFSET 20");
       expect(result.values).toEqual([18]);
