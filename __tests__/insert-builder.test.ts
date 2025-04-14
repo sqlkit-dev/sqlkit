@@ -10,7 +10,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  age: number;
+  age?: number;
 }
 
 describe("InsertQueryBuilder", () => {
@@ -64,58 +64,66 @@ describe("InsertQueryBuilder", () => {
     });
   });
 
-  // describe("Bulk Insert", () => {
-  //   it("should build correct SQL for bulk insertion", () => {
-  //     const data = [
-  //       {
-  //         firstName: "John",
-  //         lastName: "Doe",
-  //         age: 30,
-  //       },
-  //       {
-  //         firstName: "Jane",
-  //         lastName: "Smith",
-  //         age: 25,
-  //       },
-  //     ];
+  describe("Bulk Insert", () => {
+    it("should build correct SQL for bulk insertion", () => {
+      const mockUsers: Omit<User, "id">[] = [
+        {
+          name: "John",
+          email: "example1@example.com",
+          age: 30,
+        },
+        {
+          name: "Doe",
+          email: "example2@example.com",
+          age: 25,
+        },
+      ];
+      const result = builder
+        .values(mockUsers)
+        .returning(["id", "name"])
+        .build();
 
-  //     const result = builder.values(data).build();
-
-  //     expect(result.sql).toContain(
-  //       'INSERT INTO users ("first_name", "last_name", "age")'
-  //     );
-  //     expect(result.sql).toContain("VALUES ($1, $2, $3), ($4, $5, $6)");
-  //     expect(result.values).toEqual(["John", "Doe", 30, "Jane", "Smith", 25]);
-  //   });
-
-  //   it("should handle missing fields in some records", () => {
-  //     const data = [
-  //       {
-  //         firstName: "John",
-  //         lastName: "Doe",
-  //         age: 30,
-  //       },
-  //       {
-  //         firstName: "Jane",
-  //         lastName: "Smith",
-  //       },
-  //     ];
-
-  //     const result = builder.values(data).build();
-
-  //     expect(result.sql).toContain(
-  //       'INSERT INTO users ("first_name", "last_name", "age")'
-  //     );
-  //     expect(result.sql).toContain("VALUES ($1, $2, $3), ($4, $5, $6)");
-  //     expect(result.values).toEqual(["John", "Doe", 30, "Jane", "Smith", null]);
-  //   });
-
-  //   it("should throw error for empty bulk insert", () => {
-  //     expect(() => {
-  //       builder.values([]).build();
-  //     }).toThrow("No data provided for bulk insert");
-  //   });
-  // });
+      expect(result.sql).toContain("INSERT INTO users (name, email, age)");
+      expect(result.sql).toContain("VALUES ($1, $2, $3), ($4, $5, $6)");
+      expect(result.values).toEqual([
+        mockUsers[0].name,
+        mockUsers[0].email,
+        mockUsers[0].age,
+        mockUsers[1].name,
+        mockUsers[1].email,
+        mockUsers[1].age,
+      ]);
+    });
+    it("should handle missing fields in some records", () => {
+      const mockUsers: Omit<User, "id">[] = [
+        {
+          name: "John",
+          email: "example1@example.com",
+          age: 30,
+        },
+        {
+          name: "Doe",
+          email: "example2@example.com",
+        },
+      ];
+      const result = builder.values(mockUsers).build();
+      expect(result.sql).toContain("INSERT INTO users (name, email, age)");
+      expect(result.sql).toContain("VALUES ($1, $2, $3), ($4, $5, $6)");
+      expect(result.values).toEqual([
+        mockUsers[0].name,
+        mockUsers[0].email,
+        mockUsers[0].age,
+        mockUsers[1].name,
+        mockUsers[1].email,
+        null,
+      ]);
+    });
+    it("should throw error for empty bulk insert", () => {
+      expect(() => {
+        builder.values([]).build();
+      }).toThrow("No data provided for bulk insert");
+    });
+  });
 
   // describe("Column Name Transformation", () => {
   //   it("should convert camelCase to snake_case", () => {
