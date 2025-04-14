@@ -65,8 +65,8 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
     // Default columns to '*' if none are provided
     const columns =
       this.payload.columns
-        ?.map((col) => `${this.tableName}.${col.toString()}`)
-        .join(",") ?? `${this.tableName}.*`;
+        ?.map((col) => `"${this.tableName}"."${col.toString()}"`)
+        .join(",") ?? `"${this.tableName}".*`;
 
     const { whereClause, values } = buildWhereClause(
       this.payload.where,
@@ -85,7 +85,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
     const sql = `
       SELECT ${columns}
       ${joinSelectClause ? `${joinSelectClause.join(",")}` : ""}
-      FROM ${this.tableName}
+      FROM "${this.tableName}"
       ${joinConditionClause ? joinConditionClause : ""}
       ${whereClause ? `WHERE ${whereClause}` : ""}
       ${orderByClause ? orderByClause : ""}
