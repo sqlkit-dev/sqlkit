@@ -1,5 +1,3 @@
-export type DatabaseTableName = string;
-
 export interface QueryResult {
   rows: any[];
 }

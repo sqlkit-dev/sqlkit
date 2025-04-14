@@ -1,4 +1,4 @@
-import { QueryPayload } from "./query";
+import { QueryRowsPayload } from "./query";
 
 export interface PaginationMeta {
   totalCount: number;
@@ -12,7 +12,7 @@ export interface PaginatedResult<T> {
   meta: PaginationMeta;
 }
 
-export interface PaginationOptions<T> extends QueryPayload<T> {
+export interface PaginationOptions<T> extends QueryRowsPayload<T> {
   page?: number;
   limit?: number;
 }

@@ -4,7 +4,7 @@ import {
   PaginationMeta,
   PaginationOptions,
 } from "../types";
-import { Join, OrderBy, QueryPayload, WhereCondition } from "../types";
+import { Join, OrderBy, QueryRowsPayload, WhereCondition } from "../types";
 import {
   buildJoinClause,
   buildOrderByClause,
@@ -13,7 +13,7 @@ import {
 import { BaseQueryBuilder } from "./base";
 
 export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
-  private payload: QueryPayload<T> = {};
+  private payload: QueryRowsPayload<T> = {};
 
   constructor(tableName: string, executor: SqlExecutor) {
     super(tableName, executor);

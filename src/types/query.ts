@@ -39,7 +39,7 @@ export interface Join<T, F> {
   columns?: Array<keyof F>;
 }
 
-export interface QueryPayload<T> {
+export interface QueryRowsPayload<T> {
   where?: WhereCondition<T>;
   joins?: Join<T, any>[];
   orderBy?: Array<OrderBy<T>>;
