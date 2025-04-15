@@ -21,7 +21,7 @@
     "test": "jest --runInBand",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "docs": "typedoc --out docs src",
+    "docs": "npx typedoc --out docs src",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -39,7 +39,6 @@
     "pg": "^8.14.1",
     "prettier": "^3.5.3",
     "ts-jest": "^29.3.2",
-    "tsup": "^8.4.0",
-    "typedoc": "^0.28.2"
+    "tsup": "^8.4.0"
   }
 }
