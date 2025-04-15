@@ -1,8 +1,12 @@
 import { Repository } from "../../src/repository/repository";
 import { eq, and, gt, like } from "../../src";
-import {executor, setupTestTables, cleanupTestData, seedTestData, DomainUser} from "../../test-setup";
-
-
+import {
+  executor,
+  setupTestTables,
+  cleanupTestData,
+  seedTestData,
+  DomainUser,
+} from "../../test-setup";
 
 describe("Repository findRow", () => {
   let repository: Repository<DomainUser>;
@@ -34,7 +38,9 @@ describe("Repository findRow", () => {
   });
 
   it("should return null when no row is found", async () => {
-    const result = await repository.findRow(eq("email", 'email-that-does-not-exists@example.com'));
+    const result = await repository.findRow(
+      eq("email", "email-that-does-not-exists@example.com")
+    );
     expect(result).toBeNull();
   });
 

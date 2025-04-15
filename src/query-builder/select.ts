@@ -84,7 +84,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
 
     const sql = `
       SELECT ${columns}
-      ${joinSelectClause ? `,${joinSelectClause.join(",")}` : ""}
+      ${joinSelectClause.length > 0 ? `,${joinSelectClause.join(",")}` : ""}
       FROM "${this.tableName}"
       ${joinConditionClause ? joinConditionClause : ""}
       ${whereClause ? `WHERE ${whereClause}` : ""}
