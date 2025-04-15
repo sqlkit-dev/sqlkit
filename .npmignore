@@ -1,0 +1,10 @@
+/__tests__
+package*.json
+/node_modules
+/src
+/.npmrc
+.env*
+.gitignore
+/.github
+README.md
+/.vscode

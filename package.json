@@ -7,6 +7,10 @@
     "name": "KingRayhan",
     "url": "https://www.rayhan.dev"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sqlkit-dev/sqlkit"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
