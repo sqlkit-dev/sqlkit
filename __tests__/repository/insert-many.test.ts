@@ -1,20 +1,15 @@
 import { SqlExecutor, QueryResult } from "../../src";
 import { Repository } from "../../src/repository/repository";
+import {DomainUser} from "../../test-setup";
 
 // Mock SqlExecutor
 const mockExecutor: jest.Mocked<SqlExecutor> = {
   executeSQL: jest.fn(),
 };
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  age?: number;
-}
 
 describe("Repository insertMany", () => {
-  let repository: Repository<User>;
+  let repository: Repository<DomainUser>;
 
   beforeEach(() => {
     repository = new Repository("users", mockExecutor);
@@ -22,7 +17,7 @@ describe("Repository insertMany", () => {
   });
 
   it("should insert multiple records and return them", async () => {
-    const mockUsers: Partial<User>[] = [
+    const mockUsers: Partial<DomainUser>[] = [
       {
         name: "John Doe",
         email: "john@example.com",
@@ -57,7 +52,7 @@ describe("Repository insertMany", () => {
   });
 
   it("should insert records with specific returning columns", async () => {
-    const mockUsers: Partial<User>[] = [
+    const mockUsers: Partial<DomainUser>[] = [
       {
         name: "John Doe",
         email: "john@example.com",
@@ -90,7 +85,7 @@ describe("Repository insertMany", () => {
   });
 
   it("should handle null values", async () => {
-    const mockUsers: Partial<User>[] = [
+    const mockUsers: Partial<DomainUser>[] = [
       {
         name: "John Doe",
         email: null as any,
@@ -125,7 +120,7 @@ describe("Repository insertMany", () => {
   });
 
   it("should handle undefined values", async () => {
-    const mockUsers: Partial<User>[] = [
+    const mockUsers: Partial<DomainUser>[] = [
       {
         name: "John Doe",
         email: "john@example.com",
@@ -164,7 +159,7 @@ describe("Repository insertMany", () => {
   });
 
   it("should handle different column sets", async () => {
-    const mockUsers: Partial<User>[] = [
+    const mockUsers: Partial<DomainUser>[] = [
       {
         name: "John Doe",
         email: "john@example.com",
@@ -202,7 +197,7 @@ describe("Repository insertMany", () => {
   });
 
   it("should handle errors during execution", async () => {
-    const mockUsers: Partial<User>[] = [
+    const mockUsers: Partial<DomainUser>[] = [
       {
         name: "John Doe",
         email: "john@example.com",

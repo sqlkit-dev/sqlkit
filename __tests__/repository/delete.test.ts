@@ -1,21 +1,15 @@
 import { SqlExecutor, QueryResult } from "../../src";
 import { Repository } from "../../src/repository/repository";
 import { eq, gt, and, like } from "../../src";
+import {DomainUser} from "../../test-setup";
 
 // Mock SqlExecutor
 const mockExecutor: jest.Mocked<SqlExecutor> = {
   executeSQL: jest.fn(),
 };
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  age?: number;
-}
-
 describe("Repository delete", () => {
-  let repository: Repository<User>;
+  let repository: Repository<DomainUser>;
 
   beforeEach(() => {
     repository = new Repository("users", mockExecutor);
@@ -23,7 +17,7 @@ describe("Repository delete", () => {
   });
 
   it("should delete a record and return it", async () => {
-    const mockUser: User = {
+    const mockUser: Omit<DomainUser, 'created_at'> = {
       id: "1",
       name: "John Doe",
       email: "john@example.com",
@@ -43,7 +37,7 @@ describe("Repository delete", () => {
   });
 
   it("should delete a record with specific returning columns", async () => {
-    const mockUser: Partial<User> = {
+    const mockUser: Partial<DomainUser> = {
       id: "1",
       name: "John Doe",
     };
@@ -74,7 +68,7 @@ describe("Repository delete", () => {
   });
 
   it("should handle complex where conditions", async () => {
-    const mockUser: User = {
+    const mockUser: DomainUser = {
       id: "1",
       name: "John Doe",
       email: "john@example.com",

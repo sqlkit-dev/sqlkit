@@ -1,16 +1,10 @@
-import { Repository } from "../../src/repository/repository";
-import { eq, gt, and, like } from "../../src";
-import { executor, setupTestTables, cleanupTestData } from "../../test-setup";
+import {Repository} from "../../src/repository/repository";
+import {and, eq, gt, like} from "../../src";
+import {cleanupTestData, DomainUser, executor, setupTestTables} from "../../test-setup";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  age?: number;
-}
 
 describe("Repository count", () => {
-  let repository: Repository<User>;
+  let repository: Repository<DomainUser>;
 
   beforeAll(async () => {
     await setupTestTables();
@@ -18,6 +12,9 @@ describe("Repository count", () => {
 
   beforeEach(async () => {
     repository = new Repository("users", executor);
+    await cleanupTestData();
+  });
+  afterAll(async () => {
     await cleanupTestData();
   });
 
@@ -29,7 +26,6 @@ describe("Repository count", () => {
     );
 
     const result = await repository.count(like("name", "%Doe%"));
-
     expect(result).toBe(2);
   });
 

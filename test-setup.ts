@@ -1,6 +1,13 @@
-import {Pool} from "pg";
-import {PostgresAdapter, Table} from "./src";
-import {integer, text, timestamp, uuid, varchar,} from "./src/types/column-type";
+import { Pool } from "pg";
+import { PostgresAdapter, Table } from "./src";
+import {
+  integer,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from "./src/types/column-type";
+import { faker } from "@faker-js/faker";
 
 // Test database configuration
 const TEST_DB_CONFIG = {
@@ -52,12 +59,12 @@ export async function setupTestTables() {
     column: "id",
     onDelete: "CASCADE",
   });
-  await cleanupTestTables()
+  await cleanupTestTables();
 
-  const createUserTableSQL = userTable.createTableSql()
-  const createPostsTableSql = postTable.createTableSql()
-  const createTagsTableSql = tagTable.createTableSql()
-  const createPostTagPivotTableSql = articleTagPivotTable.createTableSql()
+  const createUserTableSQL = userTable.createTableSql();
+  const createPostsTableSql = postTable.createTableSql();
+  const createTagsTableSql = tagTable.createTableSql();
+  const createPostTagPivotTableSql = articleTagPivotTable.createTableSql();
 
   await pool.query(createUserTableSQL);
   await pool.query(createPostsTableSql);
@@ -85,6 +92,58 @@ export async function cleanupTestData() {
   `);
 }
 
+// Seed test data
+export async function seedTestData() {
+  // Seed users
+  const userInsertPromises = Array.from({ length: 10 }).map(() => {
+    return pool.query(
+      `INSERT INTO users (name, email, age, bio) VALUES ($1, $2, $3, $4)`,
+      [
+        faker.person.fullName(),
+        faker.internet.email(),
+        faker.number.int({ min: 18, max: 99 }),
+        faker.lorem.sentence(),
+      ]
+    );
+  });
+  await Promise.all(userInsertPromises);
+
+  // Seed posts
+  const userIds = (await pool.query(`SELECT id FROM users`)).rows.map(
+    (row) => row.id
+  );
+  const postInsertPromises = userIds.map((userId) => {
+    return pool.query(
+      `INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3)`,
+      [faker.lorem.words(3), faker.lorem.paragraph(), userId]
+    );
+  });
+  await Promise.all(postInsertPromises);
+
+  // Seed tags
+  const tagInsertPromises = Array.from({ length: 2 }).map(() => {
+    return pool.query(`INSERT INTO tags (title) VALUES ($1)`, [
+      faker.lorem.word(),
+    ]);
+  });
+  await Promise.all(tagInsertPromises);
+
+  // Seed post_tag_pivot
+  const postIds = (await pool.query(`SELECT id FROM posts`)).rows.map(
+    (row) => row.id
+  );
+  const tagIds = (await pool.query(`SELECT id FROM tags`)).rows.map(
+    (row) => row.id
+  );
+  const pivotInsertPromises = postIds.map((postId, index) => {
+    return pool.query(
+      `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
+      [postId, tagIds[index % tagIds.length]]
+    );
+  });
+  await Promise.all(pivotInsertPromises);
+}
+
 // domain models
 
 export interface DomainUser {
@@ -93,7 +152,7 @@ export interface DomainUser {
   email: string;
   age?: number;
   bio?: string;
-  created_at: Date;
+  created_at?: Date;
 }
 
 export interface DomainPost {
@@ -102,4 +161,15 @@ export interface DomainPost {
   content: string;
   author_id: string;
   author?: DomainUser;
+}
+
+export interface DomainTag {
+  id: string;
+  title: string;
+}
+export interface DomainPostTagPivot {
+  post_id: string;
+  tag_id: string;
+  post?: DomainPost;
+  tag?: DomainTag;
 }
