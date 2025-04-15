@@ -16,7 +16,7 @@ import { buildWhereClause } from "../utils";
 export class Repository<T> {
   constructor(
     protected readonly tableName: string,
-    protected readonly executor: SqlExecutor
+    protected readonly executor: SqlExecutor,
   ) {}
 
   async findRow(where: WhereCondition<T>): Promise<T | null> {
@@ -72,7 +72,7 @@ export class Repository<T> {
 
   async insertOne(
     data: Partial<T>,
-    returning: Array<keyof T> = ["*"] as any
+    returning: Array<keyof T> = ["*"] as any,
   ): Promise<T> {
     const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder.values(data).returning(returning).commit();
@@ -81,7 +81,7 @@ export class Repository<T> {
 
   async insertMany(
     data: Partial<T>[],
-    returning: Array<keyof T> = ["*"] as any
+    returning: Array<keyof T> = ["*"] as any,
   ): Promise<T[]> {
     const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder.values(data).returning(returning).commit();
@@ -106,7 +106,7 @@ export class Repository<T> {
 
   async delete(
     where: WhereCondition<T>,
-    returning?: Array<keyof T>
+    returning?: Array<keyof T>,
   ): Promise<T | null> {
     const builder = new DeleteQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder.where(where).returning(returning).commit();

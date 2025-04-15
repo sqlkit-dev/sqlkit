@@ -1,9 +1,5 @@
 import { SqlExecutor } from "../types";
-import {
-  PaginatedResult,
-  PaginationMeta,
-  PaginationOptions,
-} from "../types";
+import { PaginatedResult, PaginationMeta, PaginationOptions } from "../types";
 import { Join, OrderBy, QueryRowsPayload, WhereCondition } from "../types";
 import {
   buildJoinClause,
@@ -70,13 +66,16 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
 
     const { whereClause, values } = buildWhereClause(
       this.payload.where,
-      this.tableName
+      this.tableName,
     );
 
-    const orderByClause = buildOrderByClause(this.payload.orderBy, this.tableName);
+    const orderByClause = buildOrderByClause(
+      this.payload.orderBy,
+      this.tableName,
+    );
     const { joinConditionClause, joinSelectClause } = buildJoinClause(
       this.payload.joins,
-        this.tableName
+      this.tableName,
     );
 
     // Build the SQL query with LIMIT, OFFSET, and ORDER BY
@@ -85,7 +84,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
 
     const sql = `
       SELECT ${columns}
-      ${joinSelectClause ? `${joinSelectClause.join(",")}` : ""}
+      ${joinSelectClause ? `,${joinSelectClause.join(",")}` : ""}
       FROM "${this.tableName}"
       ${joinConditionClause ? joinConditionClause : ""}
       ${whereClause ? `WHERE ${whereClause}` : ""}
@@ -112,7 +111,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
     // Execute count query for pagination metadata
     const countBuilder = new SelectQueryBuilder<T>(
       this.tableName,
-      this.executor
+      this.executor,
     );
     if (options.where) {
       countBuilder.where(options.where);
@@ -133,7 +132,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
 
     const countResult = await this.executor.executeSQL(
       countSql,
-      buildWhereClause(options.where, this.tableName).values
+      buildWhereClause(options.where, this.tableName).values,
     );
 
     const totalCount = parseInt(countResult.rows[0].count, 10);

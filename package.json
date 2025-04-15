@@ -1,8 +1,8 @@
 {
-  "name": "tinyorm",
+  "name": "sqlkit",
   "version": "1.0.0",
   "description": "A lightweight SQL builder for TypeScript",
-  "license": "ISC",
+  "license": "MIT",
   "author": {
     "name": "KingRayhan",
     "url": "https://www.rayhan.dev"
