@@ -10,6 +10,9 @@
 npm install sqlkit
 ```
 
+[API Documentation](https://sqlkit-dev.github.io/sqlkit/)
+
+
 ## 🚀 Usage Examples
 
 Define Your Domain Model
