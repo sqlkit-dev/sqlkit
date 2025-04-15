@@ -21,7 +21,7 @@
     "test": "jest --runInBand",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "docs": "npx typedoc --out docs src",
+    "docs": "npx typedoc src/index.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
