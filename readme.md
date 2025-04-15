@@ -1,6 +1,6 @@
 # sqlkit
 
-**sqlkit** is a lightweight and expressive SQL query builder and repository layer for TypeScript with PostgreSQL support.
+**sqlkit** is a zero-dependency lightweight and expressive SQL query builder and repository layer for TypeScript with PostgreSQL support.
 
 ---
 
