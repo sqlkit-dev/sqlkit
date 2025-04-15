@@ -34,7 +34,6 @@ export class Column {
   }
 
   $defaultUUID(): this {
-    // @ts-ignore
     this._generateUUID = true;
     return this;
   }

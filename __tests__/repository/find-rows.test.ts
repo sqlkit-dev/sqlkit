@@ -204,7 +204,7 @@ describe("Repository findRows", () => {
     });
   });
 
-  // describe("Logical Operators", () => {
+  describe("Logical Operators", () => {
   //   it("should find rows with and operator", async () => {
   //     const users = await createTestUsers(3);
   //     const minAge = 25;
@@ -261,7 +261,7 @@ describe("Repository findRows", () => {
   //       )
   //     ).toBe(true);
   //   });
-  // });
+  });
   //
   // describe("Sorting Operators", () => {
   //   it("should sort rows with asc operator", async () => {

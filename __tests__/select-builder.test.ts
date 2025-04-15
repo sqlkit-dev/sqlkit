@@ -1,4 +1,4 @@
-import {CompositeWhere, Join, OrderBy, SelectQueryBuilder, SimpleWhere, SqlExecutor} from "../src";
+import {and, CompositeWhere, eq, gt, Join, OrderBy, SelectQueryBuilder, SimpleWhere, SqlExecutor} from "../src";
 
 // Mock SqlExecutor
 const mockExecutor: SqlExecutor = {
@@ -28,6 +28,7 @@ describe("SelectQueryBuilder", () => {
   });
 
   describe("Basic Select", () => {
+
     it("should build correct SQL for basic select", () => {
       const result = builder.build();
 

@@ -43,9 +43,27 @@ export async function setupTestTables() {
     onDelete: "CASCADE",
   });
 
+  const tagTable = new Table<any>("tags");
+  postTable.column("id", uuid()).primaryKey().$defaultUUID();
+  postTable.column("title", varchar()).notNull();
+
+  const articleTagPivotTable = new Table<any>("article_tag_pivot");
+  articleTagPivotTable.column("article_id", uuid()).notNull().references({
+    table: "articles",
+    column: "id",
+    onDelete: "CASCADE",
+  });
+  articleTagPivotTable.column("tag_id", uuid()).notNull().references({
+    table: "tags",
+    column: "id",
+    onDelete: "CASCADE",
+  });
+
   await pool.query(`
     ${userTable.createTableSql()};
     ${postTable.createTableSql()};
+    ${tagTable.createTableSql()};
+    ${articleTagPivotTable.createTableSql()};
   `);
 }
 

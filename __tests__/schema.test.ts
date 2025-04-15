@@ -28,19 +28,26 @@ interface Post {
 describe("Schema and Table", () => {
   describe("Table Creation", () => {
     it("should create a table with basic columns", () => {
+      // CREATE TABLE IF NOT EXISTS users (
+      //   "id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+      //   "name" VARCHAR(255),
+      //   "email" VARCHAR(255),
+      //   "age" INTEGER,
+      //   "createdAt" TIMESTAMP DEFAULT 'now()'
+      // );
       const table = new Table<User>("users");
-      table.column("id", uuid());
+      table.column("id", uuid()).primaryKey().$defaultUUID();
       table.column("name", varchar(255));
       table.column("email", varchar(255));
       table.column("age", integer());
-      table.column("createdAt", timestamp()).default("now()");
+      table.column("createdAt", timestamp()).$defaultNOW();
       const sql = table.createTableSql();
       expect(sql).toContain("CREATE TABLE IF NOT EXISTS users");
-      expect(sql).toContain('"id" UUID');
+      expect(sql).toContain(`"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`);
       expect(sql).toContain('"name" VARCHAR(255)');
       expect(sql).toContain('"email" VARCHAR(255)');
       expect(sql).toContain('"age" INTEGER');
-      expect(sql).toContain('"createdAt" TIMESTAMP');
+      expect(sql).toContain(`"createdAt" TIMESTAMP DEFAULT 'now()'`);
     });
 
     it("should create a table with primary key", () => {
