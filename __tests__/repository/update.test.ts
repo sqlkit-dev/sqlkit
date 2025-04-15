@@ -44,12 +44,12 @@ describe("Repository Update", () => {
     });
 
     expect(updatedPost).toBeDefined();
-    expect(updatedPost.title).toBe("Updated Title");
+    expect(updatedPost?.title).toBe("Updated Title");
 
     // Make sure also updated in the database
     const queryResult = await executor.executeSQL<DomainPost>(
       `SELECT * FROM posts WHERE id = $1`,
-      [targetPost.id],
+      [targetPost.id]
     );
     expect(queryResult.rows[0]).toBeDefined();
     expect(queryResult.rows[0]).toMatchObject({
@@ -67,13 +67,13 @@ describe("Repository Update", () => {
       },
     });
     expect(updatedUser).toBeDefined();
-    expect(updatedUser.name).toBe("Updated Name");
-    expect(updatedUser.age).toBe(30);
+    expect(updatedUser?.name).toBe("Updated Name");
+    expect(updatedUser?.age).toBe(30);
 
     // Make sure also updated in the database
     const fetchedUser = await executor.executeSQL<DomainUser>(
       `SELECT * from users WHERE id = $1`,
-      [targetUser.id],
+      [targetUser.id]
     );
     expect(fetchedUser).toBeDefined();
     expect(fetchedUser?.rows[0]).toMatchObject({
@@ -96,7 +96,7 @@ describe("Repository Update", () => {
     const targetUser = users[1];
     const fetchedUsers = await executor.executeSQL<DomainUser>(
       `SELECT * FROM users WHERE id = $1`,
-      [targetUser.id],
+      [targetUser.id]
     );
     const originalUser = fetchedUsers.rows[0];
     expect(originalUser).toBeDefined();
@@ -108,7 +108,7 @@ describe("Repository Update", () => {
       },
     });
     expect(updatedUser).toBeDefined();
-    expect(updatedUser.name).toBe("Partially Updated Name");
+    expect(updatedUser?.name).toBe("Partially Updated Name");
     expect(updatedUser?.age).toBe(originalUser?.age); // Age should remain unchanged
   });
 });
