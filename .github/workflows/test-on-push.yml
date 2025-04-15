@@ -8,6 +8,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: rayhan
+          POSTGRES_PASSWORD: rayhan123
+          POSTGRES_DB: tinyorm_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rayhan" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
 
     steps:
     - name: Checkout code
