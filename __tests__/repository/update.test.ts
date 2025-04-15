@@ -7,7 +7,7 @@ import {
   setupTestTables,
 } from "../../test-setup";
 import { Repository } from "../../src/repository/repository";
-import { eq } from "../../src";
+import { eq, like } from "../../src";
 
 describe("Repository Update", () => {
   let postRepository: Repository<DomainPost>;
@@ -57,48 +57,58 @@ describe("Repository Update", () => {
     });
   });
 
-  // it("should update multiple fields of a user correctly", async () => {
-  //   const targetUser = users[0];
-  //   const updatedUser = await userRepository.update({
-  //     where: eq("id", targetUser.id),
-  //     data: {
-  //       name: "Updated Name",
-  //       age: 30,
-  //     },
-  //   });
-  //   expect(updatedUser).toBeDefined();
-  //   expect(updatedUser.name).toBe("Updated Name");
-  //   expect(updatedUser.age).toBe(30);
-  //
-  //   const fetchedUser = await userRepository.findById(targetUser.id);
-  //   expect(fetchedUser).toBeDefined();
-  //   expect(fetchedUser?.name).toBe("Updated Name");
-  //   expect(fetchedUser?.age).toBe(30);
-  // });
-  //
-  // it("should return null if the record to update does not exist", async () => {
-  //   const result = await postRepository.update({
-  //     where: eq("id", 999),
-  //     data: {
-  //       title: "Non-existent Post",
-  //     },
-  //   });
-  //   expect(result).toBeNull();
-  // });
-  //
-  // it("should not update fields that are not provided", async () => {
-  //   const targetUser = users[1];
-  //   const originalUser = await userRepository.findById(targetUser.id);
-  //   expect(originalUser).toBeDefined();
-  //
-  //   const updatedUser = await userRepository.update({
-  //     where: eq("id", targetUser.id),
-  //     data: {
-  //       name: "Partially Updated Name",
-  //     },
-  //   });
-  //   expect(updatedUser).toBeDefined();
-  //   expect(updatedUser.name).toBe("Partially Updated Name");
-  //   expect(updatedUser?.age).toBe(originalUser?.age); // Age should remain unchanged
-  // });
+  it("should update multiple fields of a user correctly", async () => {
+    const targetUser = users[0];
+    const updatedUser = await userRepository.update({
+      where: eq("id", targetUser.id),
+      data: {
+        name: "Updated Name",
+        age: 30,
+      },
+    });
+    expect(updatedUser).toBeDefined();
+    expect(updatedUser.name).toBe("Updated Name");
+    expect(updatedUser.age).toBe(30);
+
+    // Make sure also updated in the database
+    const fetchedUser = await executor.executeSQL<DomainUser>(
+      `SELECT * from users WHERE id = $1`,
+      [targetUser.id],
+    );
+    expect(fetchedUser).toBeDefined();
+    expect(fetchedUser?.rows[0]).toMatchObject({
+      name: "Updated Name",
+      age: 30,
+    });
+  });
+
+  it("should return null if the record to update does not exist", async () => {
+    const result = await postRepository.update({
+      where: like("title", "%post-not-exists%"),
+      data: {
+        title: "Non-existent Post",
+      },
+    });
+    expect(result).toBeNull();
+  });
+
+  it("should not update fields that are not provided", async () => {
+    const targetUser = users[1];
+    const fetchedUsers = await executor.executeSQL<DomainUser>(
+      `SELECT * FROM users WHERE id = $1`,
+      [targetUser.id],
+    );
+    const originalUser = fetchedUsers.rows[0];
+    expect(originalUser).toBeDefined();
+
+    const updatedUser = await userRepository.update({
+      where: eq("id", targetUser.id),
+      data: {
+        name: "Partially Updated Name",
+      },
+    });
+    expect(updatedUser).toBeDefined();
+    expect(updatedUser.name).toBe("Partially Updated Name");
+    expect(updatedUser?.age).toBe(originalUser?.age); // Age should remain unchanged
+  });
 });

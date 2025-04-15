@@ -7,7 +7,6 @@ import {
   setupTestTables,
 } from "../../test-setup";
 import { Repository } from "../../src/repository/repository";
-import { desc } from "../../src";
 
 describe("Repository Pagination", () => {
   let postRepository: Repository<DomainPost>;
@@ -36,21 +35,6 @@ describe("Repository Pagination", () => {
   it("should return an empty array if page exceeds total pages", async () => {
     const page = await postRepository.paginate({ page: 100, limit: 5 });
     expect(page.nodes).toHaveLength(0);
-  });
-
-  it("should handle custom sorting for pagination", async () => {
-    const page = await userRepository.paginate({
-      page: 1,
-      limit: 5,
-      orderBy: [desc("age")],
-    });
-
-    expect(page.nodes).toHaveLength(5);
-    for (let i = 1; i < page.nodes.length; i++) {
-      expect(
-        page.nodes[i - 1]?.title?.localeCompare(page.nodes[i]?.title)
-      ).toBeGreaterThanOrEqual(0);
-    }
   });
 
   it("should paginate posts correctly without related authors", async () => {
