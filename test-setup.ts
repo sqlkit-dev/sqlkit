@@ -1,12 +1,6 @@
-import { Pool } from "pg";
-import { PostgresAdapter, Table } from "./src";
-import {
-  integer,
-  text,
-  timestamp,
-  uuid,
-  varchar,
-} from "./src/types/column-type";
+import {Pool} from "pg";
+import {PostgresAdapter, Table} from "./src";
+import {integer, text, timestamp, uuid, varchar,} from "./src/types/column-type";
 
 // Test database configuration
 const TEST_DB_CONFIG = {
@@ -44,12 +38,12 @@ export async function setupTestTables() {
   });
 
   const tagTable = new Table<any>("tags");
-  postTable.column("id", uuid()).primaryKey().$defaultUUID();
-  postTable.column("title", varchar()).notNull();
+  tagTable.column("id", uuid()).primaryKey().$defaultUUID();
+  tagTable.column("title", varchar()).notNull();
 
-  const articleTagPivotTable = new Table<any>("article_tag_pivot");
-  articleTagPivotTable.column("article_id", uuid()).notNull().references({
-    table: "articles",
+  const articleTagPivotTable = new Table<any>("post_tag_pivot");
+  articleTagPivotTable.column("post_id", uuid()).notNull().references({
+    table: "posts",
     column: "id",
     onDelete: "CASCADE",
   });
@@ -58,13 +52,17 @@ export async function setupTestTables() {
     column: "id",
     onDelete: "CASCADE",
   });
+  await cleanupTestTables()
 
-  await pool.query(`
-    ${userTable.createTableSql()};
-    ${postTable.createTableSql()};
-    ${tagTable.createTableSql()};
-    ${articleTagPivotTable.createTableSql()};
-  `);
+  const createUserTableSQL = userTable.createTableSql()
+  const createPostsTableSql = postTable.createTableSql()
+  const createTagsTableSql = tagTable.createTableSql()
+  const createPostTagPivotTableSql = articleTagPivotTable.createTableSql()
+
+  await pool.query(createUserTableSQL);
+  await pool.query(createPostsTableSql);
+  await pool.query(createTagsTableSql);
+  await pool.query(createPostTagPivotTableSql);
 }
 
 // Clean up test tables
@@ -72,6 +70,8 @@ export async function cleanupTestTables() {
   await pool.query(`
     DROP TABLE IF EXISTS users CASCADE;
     DROP TABLE IF EXISTS posts CASCADE;
+    DROP TABLE IF EXISTS tags CASCADE;
+    DROP TABLE IF EXISTS post_tag_pivot CASCADE;
   `);
 }
 
@@ -80,6 +80,8 @@ export async function cleanupTestData() {
   await pool.query(`
     TRUNCATE TABLE users CASCADE;
     TRUNCATE TABLE posts CASCADE;
+    TRUNCATE TABLE tags CASCADE;
+    TRUNCATE TABLE post_tag_pivot CASCADE;
   `);
 }
 
