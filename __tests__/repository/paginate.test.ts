@@ -7,6 +7,7 @@ import {
   setupTestTables,
 } from "../../test-setup";
 import { Repository } from "../../src/repository/repository";
+import { asc, desc } from "../../src";
 
 describe("Repository Pagination", () => {
   let postRepository: Repository<DomainPost>;
@@ -47,5 +48,35 @@ describe("Repository Pagination", () => {
     page.nodes.forEach((post) => {
       expect(post.author).toBeUndefined();
     });
+  });
+
+  it("should sort users by age in ascending order", async () => {
+    const page = await userRepository.paginate({
+      page: 1,
+      limit: 5,
+      orderBy: [asc("age")],
+    });
+
+    expect(page.nodes).toHaveLength(5);
+    for (let i = 1; i < page.nodes.length; i++) {
+      expect(page.nodes[i].age).toBeGreaterThanOrEqual(
+        page?.nodes?.[i - 1].age ?? 0
+      );
+    }
+  });
+
+  it("should sort users by age in descending order", async () => {
+    const page = await userRepository.paginate({
+      page: 1,
+      limit: 5,
+      orderBy: [desc("age")],
+    });
+
+    expect(page.nodes).toHaveLength(5);
+    for (let i = 1; i < page.nodes.length; i++) {
+      expect(page.nodes[i].age ?? 0).toBeLessThanOrEqual(
+        page.nodes[i - 1].age ?? 0
+      );
+    }
   });
 });
