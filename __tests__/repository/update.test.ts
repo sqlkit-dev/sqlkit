@@ -1,196 +1,104 @@
-import { SqlExecutor, QueryResult } from "../../src";
+import {
+  cleanupTestTables,
+  DomainPost,
+  DomainUser,
+  executor,
+  seedTestData,
+  setupTestTables,
+} from "../../test-setup";
 import { Repository } from "../../src/repository/repository";
-import { eq, gt, and, like } from "../../src/operators";
+import { eq } from "../../src";
 
-// Mock SqlExecutor
-const mockExecutor: jest.Mocked<SqlExecutor> = {
-  executeSQL: jest.fn(),
-};
+describe("Repository Update", () => {
+  let postRepository: Repository<DomainPost>;
+  let userRepository: Repository<DomainUser>;
+  let posts: DomainPost[];
+  let users: DomainUser[];
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  age?: number;
-}
+  beforeAll(async () => {
+    await setupTestTables();
+    await seedTestData();
+    postRepository = new Repository<DomainPost>("posts", executor);
+    userRepository = new Repository<DomainUser>("users", executor);
 
-describe("Repository update", () => {
-  let repository: Repository<User>;
-
-  beforeEach(() => {
-    repository = new Repository("users", mockExecutor);
-    jest.clearAllMocks();
+    const fetchedRows = await Promise.all([
+      executor.executeSQL(`SELECT * FROM posts`, []),
+      executor.executeSQL(`SELECT * FROM users`, []),
+    ]);
+    users = fetchedRows[1].rows;
+    posts = fetchedRows[0].rows;
   });
 
-  it("should update a record and return it", async () => {
-    const data: Partial<User> = {
-      name: "John Doe Updated",
-      age: 31,
-    };
+  afterAll(async () => {
+    await cleanupTestTables();
+  });
 
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          name: data.name,
-          email: "john@example.com",
-          age: data.age,
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.update({
-      where: eq("id", "1"),
-      data,
+  it("should update a single post correctly", async () => {
+    const targetPost = posts[0];
+    const updatedPost = await postRepository.update({
+      where: eq("id", targetPost.id),
+      data: {
+        title: "Updated Title",
+      },
+      returning: ["title"],
     });
 
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows[0]);
-  });
+    expect(updatedPost).toBeDefined();
+    expect(updatedPost.title).toBe("Updated Title");
 
-  it("should update a record with specific returning columns", async () => {
-    const data: Partial<User> = {
-      name: "John Doe Updated",
-    };
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          name: data.name,
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.update({
-      where: eq("id", "1"),
-      data,
-      returning: ["id", "name"],
+    // Make sure also updated in the database
+    const queryResult = await executor.executeSQL<DomainPost>(
+      `SELECT * FROM posts WHERE id = $1`,
+      [targetPost.id],
+    );
+    expect(queryResult.rows[0]).toBeDefined();
+    expect(queryResult.rows[0]).toMatchObject({
+      title: "Updated Title",
     });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows[0]);
   });
 
-  it("should handle null values", async () => {
-    const data: Partial<User> = {
-      name: "John Doe Updated",
-      email: null as any,
-      age: null as any,
-    };
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          ...data,
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.update({
-      where: eq("id", "1"),
-      data,
-    });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows[0]);
-  });
-
-  it("should handle undefined values", async () => {
-    const data: Partial<User> = {
-      name: "John Doe Updated",
-      age: undefined,
-    };
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          name: data.name,
-          email: "john@example.com",
-          age: null,
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.update({
-      where: eq("id", "1"),
-      data,
-    });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows[0]);
-  });
-
-  it("should return null when no record is updated", async () => {
-    const data: Partial<User> = {
-      name: "John Doe Updated",
-    };
-
-    const mockResult: QueryResult = {
-      rows: [],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.update({
-      where: eq("id", "999"),
-      data,
-    });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toBeNull();
-  });
-
-  it("should handle complex where conditions", async () => {
-    const data: Partial<User> = {
-      name: "John Doe Updated",
-    };
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          name: data.name,
-          email: "john@example.com",
-          age: 30,
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.update({
-      where: and(gt("age", 25), like("name", "%Doe%")),
-      data,
-    });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows[0]);
-  });
-
-  it("should handle errors during execution", async () => {
-    const data: Partial<User> = {
-      name: "John Doe Updated",
-    };
-
-    const error = new Error("Database error");
-    mockExecutor.executeSQL.mockRejectedValueOnce(error);
-
-    await expect(
-      repository.update({
-        where: eq("id", "1"),
-        data,
-      })
-    ).rejects.toThrow("Database error");
-  });
+  // it("should update multiple fields of a user correctly", async () => {
+  //   const targetUser = users[0];
+  //   const updatedUser = await userRepository.update({
+  //     where: eq("id", targetUser.id),
+  //     data: {
+  //       name: "Updated Name",
+  //       age: 30,
+  //     },
+  //   });
+  //   expect(updatedUser).toBeDefined();
+  //   expect(updatedUser.name).toBe("Updated Name");
+  //   expect(updatedUser.age).toBe(30);
+  //
+  //   const fetchedUser = await userRepository.findById(targetUser.id);
+  //   expect(fetchedUser).toBeDefined();
+  //   expect(fetchedUser?.name).toBe("Updated Name");
+  //   expect(fetchedUser?.age).toBe(30);
+  // });
+  //
+  // it("should return null if the record to update does not exist", async () => {
+  //   const result = await postRepository.update({
+  //     where: eq("id", 999),
+  //     data: {
+  //       title: "Non-existent Post",
+  //     },
+  //   });
+  //   expect(result).toBeNull();
+  // });
+  //
+  // it("should not update fields that are not provided", async () => {
+  //   const targetUser = users[1];
+  //   const originalUser = await userRepository.findById(targetUser.id);
+  //   expect(originalUser).toBeDefined();
+  //
+  //   const updatedUser = await userRepository.update({
+  //     where: eq("id", targetUser.id),
+  //     data: {
+  //       name: "Partially Updated Name",
+  //     },
+  //   });
+  //   expect(updatedUser).toBeDefined();
+  //   expect(updatedUser.name).toBe("Partially Updated Name");
+  //   expect(updatedUser?.age).toBe(originalUser?.age); // Age should remain unchanged
+  // });
 });

@@ -92,10 +92,10 @@ export async function cleanupTestData() {
   `);
 }
 
-// Seed test data
+// Seed test data: Creates 5 users, each with 5-10 posts, and assigns tags to posts through a pivot table.
 export async function seedTestData() {
   // Seed users
-  const userInsertPromises = Array.from({ length: 10 }).map(() => {
+  const userInsertPromises = Array.from({ length: 5 }).map(() => {
     return pool.query(
       `INSERT INTO users (name, email, age, bio) VALUES ($1, $2, $3, $4)`,
       [
@@ -112,16 +112,19 @@ export async function seedTestData() {
   const userIds = (await pool.query(`SELECT id FROM users`)).rows.map(
     (row) => row.id
   );
-  const postInsertPromises = userIds.map((userId) => {
-    return pool.query(
-      `INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3)`,
-      [faker.lorem.words(3), faker.lorem.paragraph(), userId]
-    );
+  const postInsertPromises = userIds.flatMap((userId) => {
+    const postCount = faker.number.int({ min: 5, max: 10 });
+    return Array.from({ length: postCount }).map(() => {
+      return pool.query(
+        `INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3)`,
+        [faker.lorem.words(3), faker.lorem.paragraph(), userId]
+      );
+    });
   });
   await Promise.all(postInsertPromises);
 
   // Seed tags
-  const tagInsertPromises = Array.from({ length: 2 }).map(() => {
+  const tagInsertPromises = Array.from({ length: 5 }).map(() => {
     return pool.query(`INSERT INTO tags (title) VALUES ($1)`, [
       faker.lorem.word(),
     ]);
@@ -135,11 +138,15 @@ export async function seedTestData() {
   const tagIds = (await pool.query(`SELECT id FROM tags`)).rows.map(
     (row) => row.id
   );
-  const pivotInsertPromises = postIds.map((postId, index) => {
-    return pool.query(
-      `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
-      [postId, tagIds[index % tagIds.length]]
-    );
+  const pivotInsertPromises = postIds.flatMap((postId) => {
+    const tagCount = faker.number.int({ min: 1, max: tagIds.length });
+    const selectedTags = faker.helpers.arrayElements(tagIds, tagCount);
+    return selectedTags.map((tagId) => {
+      return pool.query(
+        `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
+        [postId, tagId]
+      );
+    });
   });
   await Promise.all(pivotInsertPromises);
 }

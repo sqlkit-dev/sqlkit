@@ -43,6 +43,7 @@ describe("Repository - insertOne", () => {
   it("should throw an error if the record violates constraints", async () => {
     const record = { name: null, email: "invalid@example.com" }; // Assuming 'name' cannot be null
 
+    // @ts-ignore
     await expect(repository.insertOne(record)).rejects.toThrow();
   });
 });

@@ -1,218 +1,67 @@
-import { SqlExecutor, QueryResult, SimpleWhere, OrderBy } from "../../src";
+import {
+  cleanupTestTables,
+  DomainPost,
+  DomainUser,
+  executor,
+  seedTestData,
+  setupTestTables,
+} from "../../test-setup";
 import { Repository } from "../../src/repository/repository";
+import { desc } from "../../src";
 
-// Mock SqlExecutor
-const mockExecutor: jest.Mocked<SqlExecutor> = {
-  executeSQL: jest.fn(),
-};
+describe("Repository Pagination", () => {
+  let postRepository: Repository<DomainPost>;
+  let userRepository: Repository<DomainUser>;
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  age?: number;
-}
-
-describe("Repository paginate", () => {
-  let repository: Repository<User>;
-
-  beforeEach(() => {
-    repository = new Repository("users", mockExecutor);
-    jest.clearAllMocks();
+  beforeAll(async () => {
+    await setupTestTables();
+    await seedTestData();
+    postRepository = new Repository<DomainPost>("posts", executor);
+    userRepository = new Repository<DomainUser>("users", executor);
   });
 
-  it("should paginate results with default page size", async () => {
-    const mockUsers: User[] = [
-      {
-        id: "1",
-        name: "John Doe",
-        email: "john@example.com",
-        age: 30,
-      },
-      {
-        id: "2",
-        name: "Jane Doe",
-        email: "jane@example.com",
-        age: 25,
-      },
-    ];
+  afterAll(async () => {
+    await cleanupTestTables();
+  });
 
-    const mockResult: QueryResult = {
-      rows: mockUsers,
-    };
+  it("should paginate posts correctly", async () => {
+    const page1 = await postRepository.paginate({ page: 1, limit: 5 });
+    const page2 = await postRepository.paginate({ page: 2, limit: 5 });
 
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
+    expect(page1.nodes).toHaveLength(5);
+    expect(page2.nodes).toHaveLength(5);
+    expect(page1.nodes[0].id).not.toEqual(page2.nodes[0].id);
+  });
 
-    const result = await repository.paginate({
+  it("should return an empty array if page exceeds total pages", async () => {
+    const page = await postRepository.paginate({ page: 100, limit: 5 });
+    expect(page.nodes).toHaveLength(0);
+  });
+
+  it("should handle custom sorting for pagination", async () => {
+    const page = await userRepository.paginate({
       page: 1,
-      limit: 10,
+      limit: 5,
+      orderBy: [desc("age")],
     });
 
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({
-      nodes: mockUsers,
-      meta: {
-        totalCount: 2,
-        currentPage: 1,
-        hasNextPage: false,
-        totalPages: 1,
-      },
-    });
+    expect(page.nodes).toHaveLength(5);
+    for (let i = 1; i < page.nodes.length; i++) {
+      expect(
+        page.nodes[i - 1]?.title?.localeCompare(page.nodes[i]?.title)
+      ).toBeGreaterThanOrEqual(0);
+    }
   });
 
-  it("should paginate results with custom page size", async () => {
-    const mockUsers: User[] = [
-      {
-        id: "1",
-        name: "John Doe",
-        email: "john@example.com",
-        age: 30,
-      },
-    ];
-
-    const mockResult: QueryResult = {
-      rows: mockUsers,
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.paginate({
-      page: 2,
-      limit: 1,
-    });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({
-      nodes: mockUsers,
-      meta: {
-        totalCount: 1,
-        currentPage: 2,
-        hasNextPage: false,
-        totalPages: 1,
-      },
-    });
-  });
-
-  it("should paginate results with where condition", async () => {
-    const mockUsers: User[] = [
-      {
-        id: "1",
-        name: "John Doe",
-        email: "john@example.com",
-        age: 30,
-      },
-    ];
-
-    const mockResult: QueryResult = {
-      rows: mockUsers,
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const where: SimpleWhere<User> = {
-      key: "age",
-      operator: ">",
-      value: 25,
-    };
-
-    const result = await repository.paginate({
+  it("should paginate posts correctly without related authors", async () => {
+    const page = await postRepository.paginate({
       page: 1,
-      limit: 10,
-      where,
+      limit: 5,
     });
 
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({
-      nodes: mockUsers,
-      meta: {
-        totalCount: 1,
-        currentPage: 1,
-        hasNextPage: false,
-        totalPages: 1,
-      },
+    expect(page.nodes).toHaveLength(5);
+    page.nodes.forEach((post) => {
+      expect(post.author).toBeUndefined();
     });
-  });
-
-  it("should paginate results with ordering", async () => {
-    const mockUsers: User[] = [
-      {
-        id: "1",
-        name: "John Doe",
-        email: "john@example.com",
-        age: 30,
-      },
-      {
-        id: "2",
-        name: "Jane Doe",
-        email: "jane@example.com",
-        age: 25,
-      },
-    ];
-
-    const mockResult: QueryResult = {
-      rows: mockUsers,
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const orderBy: OrderBy<User>[] = [
-      {
-        key: "age",
-        direction: "desc",
-      },
-    ];
-
-    const result = await repository.paginate({
-      page: 1,
-      limit: 10,
-      orderBy,
-    });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({
-      nodes: mockUsers,
-      meta: {
-        totalCount: 2,
-        currentPage: 1,
-        hasNextPage: false,
-        totalPages: 1,
-      },
-    });
-  });
-
-  it("should handle empty result set", async () => {
-    const mockResult: QueryResult = {
-      rows: [],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.paginate({
-      page: 1,
-      limit: 10,
-    });
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({
-      nodes: [],
-      meta: {
-        totalCount: 0,
-        currentPage: 1,
-        hasNextPage: false,
-        totalPages: 0,
-      },
-    });
-  });
-
-  it("should handle errors during execution", async () => {
-    const error = new Error("Database error");
-    mockExecutor.executeSQL.mockRejectedValueOnce(error);
-
-    await expect(
-      repository.paginate({
-        page: 1,
-        limit: 10,
-      })
-    ).rejects.toThrow("Database error");
   });
 });

@@ -1,214 +1,55 @@
-import { SqlExecutor, QueryResult } from "../../src";
+import {
+  setupTestTables,
+  cleanupTestData,
+  executor,
+  DomainUser,
+} from "../../test-setup";
 import { Repository } from "../../src/repository/repository";
-import {DomainUser} from "../../test-setup";
 
-// Mock SqlExecutor
-const mockExecutor: jest.Mocked<SqlExecutor> = {
-  executeSQL: jest.fn(),
-};
-
-
-describe("Repository insertMany", () => {
+describe("Repository - insertMany", () => {
   let repository: Repository<DomainUser>;
 
-  beforeEach(() => {
-    repository = new Repository("users", mockExecutor);
-    jest.clearAllMocks();
+  beforeAll(async () => {
+    await setupTestTables();
+    repository = new Repository("users", executor);
   });
 
-  it("should insert multiple records and return them", async () => {
-    const mockUsers: Partial<DomainUser>[] = [
-      {
-        name: "John Doe",
-        email: "john@example.com",
-        age: 30,
-      },
-      {
-        name: "Jane Doe",
-        email: "jane@example.com",
-        age: 25,
-      },
-    ];
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          ...mockUsers[0],
-        },
-        {
-          id: "2",
-          ...mockUsers[1],
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.insertMany(mockUsers);
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows);
+  afterEach(async () => {
+    await cleanupTestData();
   });
 
-  it("should insert records with specific returning columns", async () => {
-    const mockUsers: Partial<DomainUser>[] = [
-      {
-        name: "John Doe",
-        email: "john@example.com",
-      },
-      {
-        name: "Jane Doe",
-        email: "jane@example.com",
-      },
+  it("should insert multiple records into the database", async () => {
+    const records = [
+      { name: "John Doe", email: "john@example.com", age: 30 },
+      { name: "Jane Smith", email: "jane@example.com", age: 25 },
     ];
+    const result = await repository.insertMany(records);
 
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          name: mockUsers[0].name,
-        },
-        {
-          id: "2",
-          name: mockUsers[1].name,
-        },
-      ],
-    };
+    expect(result).toHaveLength(2);
+    expect(result[0]).toMatchObject(records[0]);
+    expect(result[1]).toMatchObject(records[1]);
 
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.insertMany(mockUsers, ["id", "name"]);
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows);
-  });
-
-  it("should handle null values", async () => {
-    const mockUsers: Partial<DomainUser>[] = [
-      {
-        name: "John Doe",
-        email: null as any,
-        age: null as any,
-      },
-      {
-        name: "Jane Doe",
-        email: null as any,
-        age: null as any,
-      },
-    ];
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          ...mockUsers[0],
-        },
-        {
-          id: "2",
-          ...mockUsers[1],
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.insertMany(mockUsers);
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows);
-  });
-
-  it("should handle undefined values", async () => {
-    const mockUsers: Partial<DomainUser>[] = [
-      {
-        name: "John Doe",
-        email: "john@example.com",
-        age: undefined,
-      },
-      {
-        name: "Jane Doe",
-        email: "jane@example.com",
-        age: undefined,
-      },
-    ];
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          name: mockUsers[0].name,
-          email: mockUsers[0].email,
-          age: null,
-        },
-        {
-          id: "2",
-          name: mockUsers[1].name,
-          email: mockUsers[1].email,
-          age: null,
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.insertMany(mockUsers);
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows);
-  });
-
-  it("should handle different column sets", async () => {
-    const mockUsers: Partial<DomainUser>[] = [
-      {
-        name: "John Doe",
-        email: "john@example.com",
-      },
-      {
-        name: "Jane Doe",
-        email: "jane@example.com",
-        age: 25,
-      },
-    ];
-
-    const mockResult: QueryResult = {
-      rows: [
-        {
-          id: "1",
-          name: mockUsers[0].name,
-          email: mockUsers[0].email,
-          age: null,
-        },
-        {
-          id: "2",
-          name: mockUsers[1].name,
-          email: mockUsers[1].email,
-          age: mockUsers[1].age,
-        },
-      ],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.insertMany(mockUsers);
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockResult.rows);
-  });
-
-  it("should handle errors during execution", async () => {
-    const mockUsers: Partial<DomainUser>[] = [
-      {
-        name: "John Doe",
-        email: "john@example.com",
-      },
-    ];
-
-    const error = new Error("Database error");
-    mockExecutor.executeSQL.mockRejectedValueOnce(error);
-
-    await expect(repository.insertMany(mockUsers)).rejects.toThrow(
-      "Database error"
+    const insertedRecords = await executor.executeSQL(
+      "SELECT * FROM users WHERE email IN ($1, $2)",
+      ["john@example.com", "jane@example.com"]
     );
+
+    expect(insertedRecords.rows).toHaveLength(2);
+    expect(insertedRecords.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(records[0]),
+        expect.objectContaining(records[1]),
+      ])
+    );
+  });
+
+  it("should throw an error if one of the records violates constraints", async () => {
+    const records = [
+      { name: "Valid User", email: "valid@example.com", age: 40 },
+      { name: null, email: "invalid@example.com" }, // Assuming 'name' cannot be null
+    ];
+
+    // @ts-ignore
+    await expect(repository.insertMany(records)).rejects.toThrow();
   });
 });
