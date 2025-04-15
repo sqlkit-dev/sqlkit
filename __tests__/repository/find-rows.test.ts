@@ -1,7 +1,26 @@
-import {Repository} from "../../src/repository/repository";
-import {between, eq, gt, gte, ilike, iregexp, isNotNull, isNull, like, lt, lte, neq, regexp,} from "../../src";
-import {cleanupTestData, DomainUser, executor, setupTestTables,} from "../../test-setup";
-import {faker} from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
+import {
+  between,
+  eq,
+  gt,
+  gte,
+  ilike,
+  iregexp,
+  isNotNull,
+  isNull,
+  like,
+  lt,
+  lte,
+  neq,
+  regexp,
+} from "../../src";
+import { Repository } from "../../src/repository/repository";
+import {
+  cleanupTestData,
+  DomainUser,
+  executor,
+  setupTestTables,
+} from "../../test-setup";
 
 describe("Repository findRows", () => {
   let repository: Repository<DomainUser>;
@@ -68,7 +87,7 @@ describe("Repository findRows", () => {
 
       expect(result).toHaveLength(4);
       expect(result.every((user) => user.email !== targetUser.email)).toBe(
-          true
+        true
       );
     });
 
@@ -125,7 +144,7 @@ describe("Repository findRows", () => {
       });
 
       expect(
-          result.every((user) => user.name.toLowerCase().includes(searchTerm))
+        result.every((user) => user.name.toLowerCase().includes(searchTerm))
       ).toBe(true);
     });
 
@@ -138,9 +157,9 @@ describe("Repository findRows", () => {
       });
 
       expect(
-          result.every((user) =>
-              user.name.toLowerCase().includes(searchTerm.toLowerCase())
-          )
+        result.every((user) =>
+          user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       ).toBe(true);
     });
 
@@ -177,7 +196,7 @@ describe("Repository findRows", () => {
       });
 
       expect(
-          result.every((user) => user.age! >= minAge && user.age! <= maxAge)
+        result.every((user) => user.age! >= minAge && user.age! <= maxAge)
       ).toBe(true);
     });
 
@@ -205,62 +224,62 @@ describe("Repository findRows", () => {
   });
 
   describe("Logical Operators", () => {
-  //   it("should find rows with and operator", async () => {
-  //     const users = await createTestUsers(3);
-  //     const minAge = 25;
-  //     const role = "admin";
-  //
-  //     const result = await repository.findRows({
-  //       where: and(gt("age", minAge), eq("role", role)),
-  //     });
-  //
-  //     expect(
-  //       result.every((user) => user.age! > minAge && user.role === role)
-  //     ).toBe(true);
-  //   });
-  //
-  //   it("should find rows with or operator", async () => {
-  //     const users = await createTestUsers(3);
-  //     const minAge = 30;
-  //     const role = "admin";
-  //
-  //     const result = await repository.findRows({
-  //       where: or(gt("age", minAge), eq("role", role)),
-  //     });
-  //
-  //     expect(
-  //       result.some((user) => user.age! > minAge || user.role === role)
-  //     ).toBe(true);
-  //   });
-  //
-  //   it("should find rows with not operator", async () => {
-  //     const users = await createTestUsers(3);
-  //     const role = "admin";
-  //
-  //     const result = await repository.findRows({
-  //       where: not(eq("role", role)),
-  //     });
-  //
-  //     expect(result.every((user) => user.role !== role)).toBe(true);
-  //   });
-  //
-  //   it("should find rows with xor operator", async () => {
-  //     const users = await createTestUsers(3);
-  //     const minAge = 30;
-  //     const role = "admin";
-  //
-  //     const result = await repository.findRows({
-  //       where: xor(gt("age", minAge), eq("role", role)),
-  //     });
-  //
-  //     expect(
-  //       result.every(
-  //         (user) =>
-  //           (user.age! > minAge && user.role !== role) ||
-  //           (user.age! <= minAge && user.role === role)
-  //       )
-  //     ).toBe(true);
-  //   });
+    //   it("should find rows with and operator", async () => {
+    //     const users = await createTestUsers(3);
+    //     const minAge = 25;
+    //     const role = "admin";
+    //
+    //     const result = await repository.findRows({
+    //       where: and(gt("age", minAge), eq("role", role)),
+    //     });
+    //
+    //     expect(
+    //       result.every((user) => user.age! > minAge && user.role === role)
+    //     ).toBe(true);
+    //   });
+    //
+    //   it("should find rows with or operator", async () => {
+    //     const users = await createTestUsers(3);
+    //     const minAge = 30;
+    //     const role = "admin";
+    //
+    //     const result = await repository.findRows({
+    //       where: or(gt("age", minAge), eq("role", role)),
+    //     });
+    //
+    //     expect(
+    //       result.some((user) => user.age! > minAge || user.role === role)
+    //     ).toBe(true);
+    //   });
+    //
+    //   it("should find rows with not operator", async () => {
+    //     const users = await createTestUsers(3);
+    //     const role = "admin";
+    //
+    //     const result = await repository.findRows({
+    //       where: not(eq("role", role)),
+    //     });
+    //
+    //     expect(result.every((user) => user.role !== role)).toBe(true);
+    //   });
+    //
+    //   it("should find rows with xor operator", async () => {
+    //     const users = await createTestUsers(3);
+    //     const minAge = 30;
+    //     const role = "admin";
+    //
+    //     const result = await repository.findRows({
+    //       where: xor(gt("age", minAge), eq("role", role)),
+    //     });
+    //
+    //     expect(
+    //       result.every(
+    //         (user) =>
+    //           (user.age! > minAge && user.role !== role) ||
+    //           (user.age! <= minAge && user.role === role)
+    //       )
+    //     ).toBe(true);
+    //   });
   });
   //
   // describe("Sorting Operators", () => {

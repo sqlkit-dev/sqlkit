@@ -12,16 +12,28 @@ npm install sqlkit
 
 ## 🚀 Usage Examples
 
+Define Your Domain Model
+
+```ts
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  age?: number;
+}
+```
+
 ### 1. Query Builder (Build Mode)
 
 ```ts
 import { SelectQueryBuilder } from "sqlkit";
 
-const builder = new SelectQueryBuilder("users");
+const builder = new SelectQueryBuilder<User>("users");
 
 const { sql, values } = builder
   .select(["id", "name"])
   .where({ key: "age", operator: ">", value: 18 })
+  // OR .where(eq("age", 18))
   .build();
 
 console.log(sql);
@@ -40,11 +52,12 @@ const pool = new Pool({
 });
 const executor = new PostgresAdapter(pool);
 
-const builder = new SelectQueryBuilder("users", executor);
+const builder = new SelectQueryBuilder<User>("users", executor);
 
 const users = await builder
   .select(["id", "name"])
   .where({ key: "age", operator: ">", value: 18 })
+  // OR .where(eq("age", 18))
   .commit();
 
 console.log(users);
@@ -62,30 +75,54 @@ const pool = new Pool({
   /* your config */
 });
 const executor = new PostgresAdapter(pool);
-const userRepo = new Repository("users", executor);
+const userRepo = new Repository<User>("users", executor);
 
 // Find many
-const users = await userRepo.findRows({
+const users = await userRepo.findRows<User>({
   where: and(gt("age", 25), like("name", "%Doe%")),
 });
 
+// Paginate
+const result = await userRepo.paginate({
+  page: 1,
+  limit: 10,
+  offset: 2,
+  where: gt("age", 18),
+  columns: ["age", "email"],
+  orderBy: [asc("age")],
+});
+
+console.log(result.nodes); // array of users
+console.log(result.meta);
+/*
+{
+  totalCount: 100,
+  currentPage: 2,
+  totalPages: 10,
+  hasNextPage: true
+}
+*/
+
 // Find one
-const user = await userRepo.findRow(like("email", "%@example.com"));
+const user = await userRepo.findRow<User>(like("email", "%@example.com"));
 
 // Count
-const count = await userRepo.count(gt("age", 30));
+const count = await userRepo.count<User>(gt("age", 30));
 
 // Insert
-const newUser = await userRepo.insertOne({
+const newUser = await userRepo.insertOne<User>({
   name: "Rayhan",
   email: "ray@example.com",
 });
 
 // Update
-const updated = await userRepo.update({ name: "Ray" }, like("email", "%ray%"));
+const updated = await userRepo.update<User>(
+  { name: "Ray" },
+  like("email", "%ray%")
+);
 
 // Delete
-const deleted = await userRepo.delete(like("name", "Ray%"));
+const deleted = await userRepo.delete<User>(like("name", "Ray%"));
 ```
 
 ### 🔍 Supported Operators
