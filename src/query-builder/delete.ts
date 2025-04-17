@@ -26,7 +26,7 @@ export class DeleteQueryBuilder<T> extends BaseQueryBuilder<T> {
   build(): { sql: string; values: any[] } {
     const { whereClause, values } = buildWhereClause(
       this.whereCondition,
-      this.tableName
+      this.tableName,
     );
 
     const returning = this.returningColumns.join(", ");

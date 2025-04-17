@@ -5,7 +5,7 @@ export class Table<T> {
 
   constructor(public readonly name: string) {}
 
-  column<K extends keyof T>(name: K, type: string): Column{
+  column<K extends keyof T>(name: K, type: string): Column {
     const column = new Column(name.toString(), type);
     this.columns.push(column);
     return column;

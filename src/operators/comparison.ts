@@ -120,7 +120,7 @@ export function ilike<T>(key: keyof T, pattern: string): SimpleWhere<T> {
  */
 export function inArray<T, K extends keyof T>(
   key: K,
-  values: T[K][]
+  values: T[K][],
 ): SimpleWhere<T> {
   return {
     key,
@@ -137,7 +137,7 @@ export function inArray<T, K extends keyof T>(
  */
 export function notInArray<T, K extends keyof T>(
   key: K,
-  values: T[K][]
+  values: T[K][],
 ): SimpleWhere<T> {
   return {
     key,
@@ -182,7 +182,7 @@ export function isNotNull<T>(key: keyof T): SimpleWhere<T> {
 export function between<T, K extends keyof T>(
   key: K,
   min: T[K],
-  max: T[K]
+  max: T[K],
 ): SimpleWhere<T> {
   return {
     key,

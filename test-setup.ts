@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import * as pg from "pg";
 import { PostgresAdapter, Table } from "./src";
 import {
   integer,
@@ -8,6 +8,8 @@ import {
   varchar,
 } from "./src/types/column-type";
 import { faker } from "@faker-js/faker";
+
+const { Pool } = pg;
 
 // Test database configuration
 const TEST_DB_CONFIG = {
@@ -103,21 +105,21 @@ export async function seedTestData() {
         faker.internet.email(),
         faker.number.int({ min: 18, max: 99 }),
         faker.lorem.sentence(),
-      ]
+      ],
     );
   });
   await Promise.all(userInsertPromises);
 
   // Seed posts
   const userIds = (await pool.query(`SELECT id FROM users`)).rows.map(
-    (row) => row.id
+    (row) => row.id,
   );
   const postInsertPromises = userIds.flatMap((userId) => {
     const postCount = faker.number.int({ min: 5, max: 10 });
     return Array.from({ length: postCount }).map(() => {
       return pool.query(
         `INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3)`,
-        [faker.lorem.words(3), faker.lorem.paragraph(), userId]
+        [faker.lorem.words(3), faker.lorem.paragraph(), userId],
       );
     });
   });
@@ -133,10 +135,10 @@ export async function seedTestData() {
 
   // Seed post_tag_pivot
   const postIds = (await pool.query(`SELECT id FROM posts`)).rows.map(
-    (row) => row.id
+    (row) => row.id,
   );
   const tagIds = (await pool.query(`SELECT id FROM tags`)).rows.map(
-    (row) => row.id
+    (row) => row.id,
   );
   const pivotInsertPromises = postIds.flatMap((postId) => {
     const tagCount = faker.number.int({ min: 1, max: tagIds.length });
@@ -144,7 +146,7 @@ export async function seedTestData() {
     return selectedTags.map((tagId) => {
       return pool.query(
         `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
-        [postId, tagId]
+        [postId, tagId],
       );
     });
   });

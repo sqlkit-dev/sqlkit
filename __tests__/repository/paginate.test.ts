@@ -60,7 +60,7 @@ describe("Repository Pagination", () => {
     expect(page.nodes).toHaveLength(5);
     for (let i = 1; i < page.nodes.length; i++) {
       expect(page.nodes[i].age).toBeGreaterThanOrEqual(
-        page?.nodes?.[i - 1].age ?? 0
+        page?.nodes?.[i - 1].age ?? 0,
       );
     }
   });
@@ -75,7 +75,7 @@ describe("Repository Pagination", () => {
     expect(page.nodes).toHaveLength(5);
     for (let i = 1; i < page.nodes.length; i++) {
       expect(page.nodes[i].age ?? 0).toBeLessThanOrEqual(
-        page.nodes[i - 1].age ?? 0
+        page.nodes[i - 1].age ?? 0,
       );
     }
   });

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/tinyorm.iml" filepath="$PROJECT_DIR$/.idea/tinyorm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sqlkit.iml" filepath="$PROJECT_DIR$/.idea/sqlkit.iml" />
     </modules>
   </component>
 </project>
