@@ -1,3 +1,4 @@
+import { SQLKITException } from "../exceptions";
 import {
   Join,
   OrderBy,
@@ -98,6 +99,10 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
   }
 
   async paginate(options: PaginationOptions<T>): Promise<PaginatedResult<T>> {
+    if(!this?.executor){
+      throw new SQLKITException("Executor is not set for the query builder.");
+    }
+    
     const limit = options.limit || 10;
     const page = options.page || 1;
     const offset = (page - 1) * limit;
@@ -132,7 +137,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
       }
     `;
 
-    const countResult = await this.executor.executeSQL(
+    const countResult: any = await this.executor.executeSQL(
       countSql,
       buildWhereClause(options.where, this.tableName).values
     );
