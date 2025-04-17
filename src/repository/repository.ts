@@ -105,11 +105,13 @@ export class Repository<T> {
   }
 
   async delete(
-    where: WhereCondition<T>,
-    returning?: Array<keyof T>
+    arg: {
+      where: WhereCondition<T>;
+      returning?: Array<keyof T>;
+    }
   ): Promise<T | null> {
     const builder = new DeleteQueryBuilder<T>(this.tableName, this.executor);
-    const result = await builder.where(where).returning(returning).commit();
+    const result = await builder.where(arg.where).returning(arg.returning).commit();
     return result.rows[0] ?? null;
   }
 }
