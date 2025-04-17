@@ -1,9 +1,8 @@
-import { Pool } from "pg";
 import { QueryResult, SqlExecutor } from "../types";
 import { SQLKITException } from "../exceptions";
 
 export class PostgresAdapter implements SqlExecutor {
-  constructor(private pgPool: Pool) {}
+  constructor(private pgPool: any) {}
 
   async executeSQL<T>(sql: string, values: any[]): Promise<QueryResult> {
     return new Promise((resolve, reject) => {
