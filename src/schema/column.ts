@@ -17,7 +17,7 @@ export class Column {
 
   constructor(
     public readonly name: string,
-    public readonly type: string,
+    public readonly type: string
   ) {}
 
   notNull(): this {
@@ -54,7 +54,7 @@ export class Column {
   references({
     table,
     column = "id",
-    onDelete,
+    onDelete
   }: {
     table: string;
     column?: string;

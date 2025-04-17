@@ -12,7 +12,6 @@ npm install sqlkit
 
 [API Documentation](https://sqlkit-dev.github.io/sqlkit/)
 
-
 ## 🚀 Usage Examples
 
 Define Your Domain Model
@@ -121,7 +120,7 @@ const newUser = await userRepo.insertOne<User>({
 // Update
 const updated = await userRepo.update<User>(
   { name: "Ray" },
-  like("email", "%ray%")
+  like("email", "%ray%"),
 );
 
 // Delete

@@ -36,7 +36,7 @@ describe("InsertQueryBuilder", () => {
         .build();
 
       expect(result.sql).toContain(
-        'INSERT INTO users ("name", "email", "age")'
+        'INSERT INTO users ("name", "email", "age")',
       );
       expect(result.sql).toContain("VALUES ($1, $2, $3)");
       expect(result.sql).toContain(`RETURNING *`);

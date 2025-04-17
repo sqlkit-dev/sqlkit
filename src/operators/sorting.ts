@@ -8,7 +8,7 @@ import { OrderBy } from "../types";
 export function asc<T>(key: keyof T): OrderBy<T> {
   return {
     key,
-    direction: "asc",
+    direction: "asc"
   };
 }
 
@@ -20,7 +20,7 @@ export function asc<T>(key: keyof T): OrderBy<T> {
 export function desc<T>(key: keyof T): OrderBy<T> {
   return {
     key,
-    direction: "desc",
+    direction: "desc"
   };
 }
 
@@ -33,7 +33,7 @@ export function nullsFirst<T>(key: keyof T): OrderBy<T> {
   return {
     key,
     direction: "asc",
-    nulls: "first",
+    nulls: "first"
   };
 }
 
@@ -46,6 +46,6 @@ export function nullsLast<T>(key: keyof T): OrderBy<T> {
   return {
     key,
     direction: "desc",
-    nulls: "last",
+    nulls: "last"
   };
 }

@@ -9,7 +9,7 @@ export function and<T>(
   ...conditions: Array<WhereCondition<T>>
 ): CompositeWhere<T> {
   return {
-    AND: conditions,
+    AND: conditions
   };
 }
 
@@ -22,7 +22,7 @@ export function or<T>(
   ...conditions: Array<WhereCondition<T>>
 ): CompositeWhere<T> {
   return {
-    OR: conditions,
+    OR: conditions
   };
 }
 
@@ -33,7 +33,7 @@ export function or<T>(
  */
 export function not<T>(condition: WhereCondition<T>): CompositeWhere<T> {
   return {
-    NOT: condition,
+    NOT: condition
   };
 }
 
@@ -46,6 +46,6 @@ export function xor<T>(
   ...conditions: Array<WhereCondition<T>>
 ): CompositeWhere<T> {
   return {
-    XOR: conditions,
+    XOR: conditions
   };
 }

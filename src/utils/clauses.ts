@@ -6,7 +6,7 @@ import { toSnakeCase } from "./formatting";
  */
 export const buildWhereClause = <T>(
   where: WhereCondition<T> | undefined,
-  tableName: string,
+  tableName: string
 ): { whereClause: string; values: any[] } => {
   // If no where clause is provided, return empty
   if (!where) {
@@ -20,7 +20,7 @@ export const buildWhereClause = <T>(
 
   return {
     whereClause,
-    values,
+    values
   };
 };
 
@@ -30,13 +30,13 @@ export const buildWhereClause = <T>(
 const processWhereCondition = <T>(
   where: WhereCondition<T>,
   values: any[],
-  tableName: string,
+  tableName: string
 ): string => {
   // Handle composite conditions (AND/OR)
   if (typeof where === "object") {
     if ("AND" in where && Array.isArray(where.AND) && where.AND.length > 0) {
       const conditions = where.AND.map((condition) =>
-        processWhereCondition(condition, values, tableName),
+        processWhereCondition(condition, values, tableName)
       ).filter(Boolean);
 
       if (conditions.length === 0) return "";
@@ -47,7 +47,7 @@ const processWhereCondition = <T>(
 
     if ("OR" in where && Array.isArray(where.OR) && where.OR.length > 0) {
       const conditions = where.OR.map((condition) =>
-        processWhereCondition(condition, values, tableName),
+        processWhereCondition(condition, values, tableName)
       ).filter(Boolean);
 
       if (conditions.length === 0) return "";
@@ -71,7 +71,7 @@ const processWhereCondition = <T>(
 const processSimpleCondition = <T>(
   condition: SimpleWhere<T>,
   values: any[],
-  tableName: string,
+  tableName: string
 ): string => {
   const { key, operator, value } = condition;
 
@@ -115,7 +115,7 @@ const processSimpleCondition = <T>(
  */
 export const buildOrderByClause = <T>(
   orderBy?: Array<OrderBy<T>>,
-  baseTableName?: string,
+  baseTableName?: string
 ): string => {
   if (!orderBy || orderBy.length === 0) {
     return ""; // No order by clause
@@ -145,12 +145,12 @@ export const buildOrderByClause = <T>(
  */
 export const buildJoinClause = <T>(
   joins?: Array<Join<T, any>>,
-  baseTableName?: string,
+  baseTableName?: string
 ): { joinConditionClause: string; joinSelectClause: string[] } => {
   if (!joins || joins.length === 0) {
     return {
       joinConditionClause: "",
-      joinSelectClause: [],
+      joinSelectClause: []
     };
   }
 
@@ -177,7 +177,7 @@ export const buildJoinClause = <T>(
 
   return {
     joinConditionClause: joinConditions.join(" "),
-    joinSelectClause,
+    joinSelectClause
   };
 };
 
@@ -186,7 +186,7 @@ export const buildJoinClause = <T>(
  */
 export const buildSetClause = <T>(
   data: Partial<T>,
-  startValues: any[] = [],
+  startValues: any[] = []
 ): { setClause: string; values: any[] } => {
   if (!data || Object.keys(data).length === 0) {
     return { setClause: "", values: startValues };
@@ -207,6 +207,6 @@ export const buildSetClause = <T>(
 
   return {
     setClause: setClauses.join(", "),
-    values,
+    values
   };
 };

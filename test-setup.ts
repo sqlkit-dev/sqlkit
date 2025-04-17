@@ -78,7 +78,7 @@ export async function cleanupTestTables() {
     DROP TABLE IF EXISTS tags CASCADE;
     DROP TABLE IF EXISTS post_tag_pivot CASCADE;
   `,
-    []
+    [],
   );
 }
 
@@ -91,7 +91,7 @@ export async function cleanupTestData() {
     TRUNCATE TABLE tags CASCADE;
     TRUNCATE TABLE post_tag_pivot CASCADE;
   `,
-    []
+    [],
   );
 }
 
@@ -106,7 +106,7 @@ export async function seedTestData() {
         faker.internet.email(),
         faker.number.int({ min: 18, max: 99 }),
         faker.lorem.sentence(),
-      ]
+      ],
     );
   });
   await Promise.all(userInsertPromises);
@@ -120,7 +120,7 @@ export async function seedTestData() {
     return Array.from({ length: postCount }).map(() => {
       return executor.executeSQL(
         `INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3)`,
-        [faker.lorem.words(3), faker.lorem.paragraph(), userId]
+        [faker.lorem.words(3), faker.lorem.paragraph(), userId],
       );
     });
   });
@@ -147,7 +147,7 @@ export async function seedTestData() {
     return selectedTags.map((tagId) => {
       return executor.executeSQL(
         `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
-        [postId, tagId]
+        [postId, tagId],
       );
     });
   });

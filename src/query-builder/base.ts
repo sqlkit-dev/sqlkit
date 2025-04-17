@@ -4,7 +4,7 @@ import { SQLKITException } from "../exceptions";
 export abstract class BaseQueryBuilder<T> {
   constructor(
     protected readonly tableName: string,
-    protected readonly executor?: SqlExecutor<T>,
+    protected readonly executor?: SqlExecutor<T>
   ) {}
 
   protected abstract build(): { sql: string; values: any[] };

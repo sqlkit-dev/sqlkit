@@ -4,7 +4,7 @@ import {
   executor,
   DomainUser,
 } from "../../test-setup";
-import { Repository } from "../../src/repository/repository";
+import { Repository } from "../../src";
 
 describe("Repository - insertMany", () => {
   let repository: Repository<DomainUser>;
@@ -31,7 +31,7 @@ describe("Repository - insertMany", () => {
 
     const insertedRecords = await executor.executeSQL(
       "SELECT * FROM users WHERE email IN ($1, $2)",
-      ["john@example.com", "jane@example.com"]
+      ["john@example.com", "jane@example.com"],
     );
 
     expect(insertedRecords.rows).toHaveLength(2);
@@ -39,7 +39,7 @@ describe("Repository - insertMany", () => {
       expect.arrayContaining([
         expect.objectContaining(records[0]),
         expect.objectContaining(records[1]),
-      ])
+      ]),
     );
   });
 

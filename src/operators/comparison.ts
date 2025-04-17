@@ -10,7 +10,7 @@ export function eq<T, K extends keyof T>(key: K, value: T[K]): SimpleWhere<T> {
   return {
     key,
     operator: "=",
-    value,
+    value
   };
 }
 
@@ -24,7 +24,7 @@ export function neq<T, K extends keyof T>(key: K, value: T[K]): SimpleWhere<T> {
   return {
     key,
     operator: "<>",
-    value,
+    value
   };
 }
 
@@ -38,7 +38,7 @@ export function gt<T, K extends keyof T>(key: K, value: T[K]): SimpleWhere<T> {
   return {
     key,
     operator: ">",
-    value,
+    value
   };
 }
 
@@ -52,7 +52,7 @@ export function gte<T, K extends keyof T>(key: K, value: T[K]): SimpleWhere<T> {
   return {
     key,
     operator: ">=",
-    value,
+    value
   };
 }
 
@@ -66,7 +66,7 @@ export function lt<T, K extends keyof T>(key: K, value: T[K]): SimpleWhere<T> {
   return {
     key,
     operator: "<",
-    value,
+    value
   };
 }
 
@@ -80,7 +80,7 @@ export function lte<T, K extends keyof T>(key: K, value: T[K]): SimpleWhere<T> {
   return {
     key,
     operator: "<=",
-    value,
+    value
   };
 }
 
@@ -94,7 +94,7 @@ export function like<T>(key: keyof T, pattern: string): SimpleWhere<T> {
   return {
     key,
     operator: "like",
-    value: pattern,
+    value: pattern
   };
 }
 
@@ -108,7 +108,7 @@ export function ilike<T>(key: keyof T, pattern: string): SimpleWhere<T> {
   return {
     key,
     operator: "ilike",
-    value: pattern,
+    value: pattern
   };
 }
 
@@ -120,12 +120,12 @@ export function ilike<T>(key: keyof T, pattern: string): SimpleWhere<T> {
  */
 export function inArray<T, K extends keyof T>(
   key: K,
-  values: T[K][],
+  values: T[K][]
 ): SimpleWhere<T> {
   return {
     key,
     operator: "in",
-    value: values,
+    value: values
   };
 }
 
@@ -137,12 +137,12 @@ export function inArray<T, K extends keyof T>(
  */
 export function notInArray<T, K extends keyof T>(
   key: K,
-  values: T[K][],
+  values: T[K][]
 ): SimpleWhere<T> {
   return {
     key,
     operator: "not in",
-    value: values,
+    value: values
   };
 }
 
@@ -155,7 +155,7 @@ export function isNull<T>(key: keyof T): SimpleWhere<T> {
   return {
     key,
     operator: "=",
-    value: null,
+    value: null
   };
 }
 
@@ -168,7 +168,7 @@ export function isNotNull<T>(key: keyof T): SimpleWhere<T> {
   return {
     key,
     operator: "<>",
-    value: null,
+    value: null
   };
 }
 
@@ -182,12 +182,12 @@ export function isNotNull<T>(key: keyof T): SimpleWhere<T> {
 export function between<T, K extends keyof T>(
   key: K,
   min: T[K],
-  max: T[K],
+  max: T[K]
 ): SimpleWhere<T> {
   return {
     key,
     operator: "between",
-    value: [min, max],
+    value: [min, max]
   };
 }
 
@@ -201,7 +201,7 @@ export function regexp<T>(key: keyof T, pattern: string): SimpleWhere<T> {
   return {
     key,
     operator: "~",
-    value: pattern,
+    value: pattern
   };
 }
 
@@ -215,6 +215,6 @@ export function iregexp<T>(key: keyof T, pattern: string): SimpleWhere<T> {
   return {
     key,
     operator: "~*",
-    value: pattern,
+    value: pattern
   };
 }

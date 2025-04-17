@@ -1,7 +1,7 @@
 import { SqlExecutor, QueryResult } from "../../src";
-import { Repository } from "../../src/repository/repository";
+import { Repository } from "../../src";
 import { eq, gt, and, like } from "../../src";
-import {DomainUser} from "../../test-setup";
+import { DomainUser } from "../../test-setup";
 
 // Mock SqlExecutor
 const mockExecutor: jest.Mocked<SqlExecutor> = {
@@ -17,7 +17,7 @@ describe("Repository delete", () => {
   });
 
   it("should delete a record and return it", async () => {
-    const mockUser: Omit<DomainUser, 'created_at'> = {
+    const mockUser: Omit<DomainUser, "created_at"> = {
       id: "1",
       name: "John Doe",
       email: "john@example.com",
@@ -82,7 +82,7 @@ describe("Repository delete", () => {
     mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
 
     const result = await repository.delete(
-      and(gt("age", 25), like("name", "%Doe%"))
+      and(gt("age", 25), like("name", "%Doe%")),
     );
 
     expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
@@ -94,7 +94,7 @@ describe("Repository delete", () => {
     mockExecutor.executeSQL.mockRejectedValueOnce(error);
 
     await expect(repository.delete(eq("id", "1"))).rejects.toThrow(
-      "Database error"
+      "Database error",
     );
   });
 });

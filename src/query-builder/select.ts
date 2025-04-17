@@ -5,12 +5,12 @@ import {
   PaginationMeta,
   PaginationOptions,
   QueryRowsPayload,
-  WhereCondition,
+  WhereCondition
 } from "../types";
 import {
   buildJoinClause,
   buildOrderByClause,
-  buildWhereClause,
+  buildWhereClause
 } from "../utils";
 import { BaseQueryBuilder } from "./base";
 
@@ -68,16 +68,16 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
 
     const { whereClause, values } = buildWhereClause(
       this.payload.where,
-      this.tableName,
+      this.tableName
     );
 
     const orderByClause = buildOrderByClause(
       this.payload.orderBy,
-      this.tableName,
+      this.tableName
     );
     const { joinConditionClause, joinSelectClause } = buildJoinClause(
       this.payload.joins,
-      this.tableName,
+      this.tableName
     );
 
     // Build the SQL query with LIMIT, OFFSET, and ORDER BY
@@ -113,7 +113,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
     // Execute count query for pagination metadata
     const countBuilder = new SelectQueryBuilder<T>(
       this.tableName,
-      this.executor,
+      this.executor
     );
     if (options.where) {
       countBuilder.where(options.where);
@@ -134,7 +134,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
 
     const countResult = await this.executor.executeSQL(
       countSql,
-      buildWhereClause(options.where, this.tableName).values,
+      buildWhereClause(options.where, this.tableName).values
     );
 
     const totalCount = parseInt(countResult.rows[0].count, 10);
@@ -143,12 +143,12 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
       totalCount,
       currentPage: page,
       hasNextPage: page * limit < totalCount,
-      totalPages: limit === -1 ? 1 : Math.ceil(totalCount / limit),
+      totalPages: limit === -1 ? 1 : Math.ceil(totalCount / limit)
     };
 
     return {
       nodes,
-      meta,
+      meta
     };
   }
 }

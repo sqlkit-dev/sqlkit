@@ -1,6 +1,5 @@
 import {
   between,
-  eq,
   gt,
   gte,
   ilike,
@@ -14,8 +13,8 @@ import {
   neq,
   notInArray,
   regexp,
+  Repository,
 } from "../../src";
-import {Repository} from "../../src/repository/repository";
 import {cleanupTestData, DomainUser, executor, setupTestTables,} from "../../test-setup";
 
 describe("Repository findRows", () => {
@@ -37,7 +36,7 @@ describe("Repository findRows", () => {
       });
 
       expect(result.every((user) => user.email !== "test@example.com")).toBe(
-        true
+        true,
       );
     });
 
@@ -79,7 +78,7 @@ describe("Repository findRows", () => {
       });
 
       expect(
-        result.every((user) => user.name.toLowerCase().includes("john"))
+        result.every((user) => user.name.toLowerCase().includes("john")),
       ).toBe(true);
     });
 
@@ -89,7 +88,7 @@ describe("Repository findRows", () => {
       });
 
       expect(
-        result.every((user) => user.name.toLowerCase().includes("john"))
+        result.every((user) => user.name.toLowerCase().includes("john")),
       ).toBe(true);
     });
 
@@ -100,8 +99,8 @@ describe("Repository findRows", () => {
 
       expect(
         result.every((user) =>
-          ["test1@example.com", "test2@example.com"].includes(user.email)
-        )
+          ["test1@example.com", "test2@example.com"].includes(user.email),
+        ),
       ).toBe(true);
     });
 
@@ -113,8 +112,8 @@ describe("Repository findRows", () => {
       expect(
         result.every(
           (user) =>
-            !["test1@example.com", "test2@example.com"].includes(user.email)
-        )
+            !["test1@example.com", "test2@example.com"].includes(user.email),
+        ),
       ).toBe(true);
     });
 
@@ -140,7 +139,7 @@ describe("Repository findRows", () => {
       });
 
       expect(result.every((user) => user.age! >= 25 && user.age! <= 35)).toBe(
-        true
+        true,
       );
     });
 

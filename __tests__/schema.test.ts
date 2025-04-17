@@ -43,7 +43,9 @@ describe("Schema and Table", () => {
       table.column("createdAt", timestamp()).$defaultNOW();
       const sql = table.createTableSql();
       expect(sql).toContain("CREATE TABLE IF NOT EXISTS users");
-      expect(sql).toContain(`"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`);
+      expect(sql).toContain(
+        `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`,
+      );
       expect(sql).toContain('"name" VARCHAR(255)');
       expect(sql).toContain('"email" VARCHAR(255)');
       expect(sql).toContain('"age" INTEGER');
@@ -91,7 +93,7 @@ describe("Schema and Table", () => {
 
       const sql = table.createTableSql();
       expect(sql).toContain(
-        `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`
+        `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`,
       );
       expect(sql).toContain(`"createdAt" TIMESTAMP DEFAULT 'now()'`);
     });
@@ -127,13 +129,13 @@ describe("Schema and Table", () => {
       // );
       const sql = table.createTableSql();
       expect(sql).toContain(
-        `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`
+        `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`,
       );
       expect(sql).toContain(`"name" VARCHAR(255) NOT NULL`);
       expect(sql).toContain(`"email" VARCHAR(255) NOT NULL UNIQUE`);
       expect(sql).toContain(`"age" INTEGER`);
       expect(sql).toContain(
-        `"createdAt" TIMESTAMP NOT NULL DEFAULT 'CURRENT_TIMESTAMP'`
+        `"createdAt" TIMESTAMP NOT NULL DEFAULT 'CURRENT_TIMESTAMP'`,
       );
     });
 
@@ -164,10 +166,10 @@ describe("Schema and Table", () => {
       // );
 
       expect(postsSql).toContain(
-        `"authorId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE`
+        `"authorId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE`,
       );
       expect(postsSql).toContain(
-        `"createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'`
+        `"createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'`,
       );
     });
   });

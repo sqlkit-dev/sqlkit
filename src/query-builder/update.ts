@@ -24,13 +24,13 @@ export class UpdateQueryBuilder<T> extends BaseQueryBuilder<T> {
     // Build WHERE clause
     const { whereClause, values: whereValues } = buildWhereClause(
       this.payload.where,
-      this.tableName,
+      this.tableName
     );
 
     // Build SET clause using the where values as starting point
     const { setClause, values: allValues } = buildSetClause(
       this.payload.data,
-      whereValues,
+      whereValues
     );
 
     // Handle columns for RETURNING

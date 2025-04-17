@@ -4,7 +4,7 @@ import {
   executor,
   DomainUser,
 } from "../../test-setup";
-import { Repository } from "../../src/repository/repository";
+import { Repository } from "../../src";
 
 describe("Repository - insertOne", () => {
   let repository: Repository<DomainUser>;
@@ -34,7 +34,7 @@ describe("Repository - insertOne", () => {
 
     const insertedRecord = await executor.executeSQL(
       "SELECT * FROM users WHERE email = $1",
-      ["john@example.com"]
+      ["john@example.com"],
     );
 
     expect(insertedRecord.rows[0]).toMatchObject(record);

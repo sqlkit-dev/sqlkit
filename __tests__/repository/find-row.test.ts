@@ -1,12 +1,5 @@
-import { Repository } from "../../src/repository/repository";
-import { eq, and, gt, like } from "../../src";
-import {
-  executor,
-  setupTestTables,
-  cleanupTestData,
-  seedTestData,
-  DomainUser,
-} from "../../test-setup";
+import {and, eq, gt, Repository} from "../../src";
+import {cleanupTestData, DomainUser, executor, seedTestData, setupTestTables,} from "../../test-setup";
 
 describe("Repository findRow", () => {
   let repository: Repository<DomainUser>;
@@ -25,7 +18,7 @@ describe("Repository findRow", () => {
     // Insert test data
     await executor.executeSQL(
       `INSERT INTO users (name, email, age) VALUES ($1, $2, $3)`,
-      ["John Doe", "john@example.com", 30]
+      ["John Doe", "john@example.com", 30],
     );
 
     const result = await repository.findRow(eq("email", "john@example.com"));
@@ -39,7 +32,7 @@ describe("Repository findRow", () => {
 
   it("should return null when no row is found", async () => {
     const result = await repository.findRow(
-      eq("email", "email-that-does-not-exists@example.com")
+      eq("email", "email-that-does-not-exists@example.com"),
     );
     expect(result).toBeNull();
   });
@@ -48,11 +41,11 @@ describe("Repository findRow", () => {
     // Insert test data
     await executor.executeSQL(
       `INSERT INTO users (name, email, age) VALUES ($1, $2, $3) RETURNING *`,
-      ["John Doe", "john@example.com", 30]
+      ["John Doe", "john@example.com", 30],
     );
 
     const result = await repository.findRow(
-      and(eq("name", "John Doe"), gt("age", 25))
+      and(eq("name", "John Doe"), gt("age", 25)),
     );
 
     expect(result).toMatchObject({
@@ -65,7 +58,7 @@ describe("Repository findRow", () => {
   it("should handle errors during execution", async () => {
     // Try to find a row with an invalid column name
     await expect(
-      repository.findRow(eq("invalid_column" as any, "1"))
+      repository.findRow(eq("invalid_column" as any, "1")),
     ).rejects.toThrow();
   });
 });

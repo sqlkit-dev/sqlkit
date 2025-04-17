@@ -6,7 +6,7 @@ import {
   seedTestData,
   setupTestTables,
 } from "../../test-setup";
-import { Repository } from "../../src/repository/repository";
+import { Repository } from "../../src";
 import { asc, desc } from "../../src";
 
 describe("Repository Pagination", () => {

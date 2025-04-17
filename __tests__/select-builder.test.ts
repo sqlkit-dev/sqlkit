@@ -1,4 +1,11 @@
-import {and, CompositeWhere, eq, gt, Join, OrderBy, SelectQueryBuilder, SimpleWhere, SqlExecutor} from "../src";
+import {
+  CompositeWhere,
+  Join,
+  OrderBy,
+  SelectQueryBuilder,
+  SimpleWhere,
+  SqlExecutor,
+} from "../src";
 
 // Mock SqlExecutor
 const mockExecutor: SqlExecutor = {
@@ -28,7 +35,6 @@ describe("SelectQueryBuilder", () => {
   });
 
   describe("Basic Select", () => {
-
     it("should build correct SQL for basic select", () => {
       const result = builder.build();
 
@@ -71,7 +77,7 @@ describe("SelectQueryBuilder", () => {
       const result = builder.where(where).build();
 
       expect(result.sql).toContain(
-        `WHERE ("users"."age" > $1 AND "users"."name" = $2)`
+        `WHERE ("users"."age" > $1 AND "users"."name" = $2)`,
       );
       expect(result.values).toEqual([18, "John"]);
     });
@@ -86,7 +92,9 @@ describe("SelectQueryBuilder", () => {
 
       const result = builder.where(where).build();
 
-      expect(result.sql).toContain(`WHERE ("users"."age" > $1 OR "users"."name" = $2)`);
+      expect(result.sql).toContain(
+        `WHERE ("users"."age" > $1 OR "users"."name" = $2)`,
+      );
       expect(result.values).toEqual([18, "John"]);
     });
 
@@ -107,14 +115,14 @@ describe("SelectQueryBuilder", () => {
                 value: "Jane",
               },
             ],
-          }
+          },
         ],
       };
 
       const result = builder.where(where).build();
 
       expect(result.sql).toContain(
-        `WHERE ("users"."age" > $1 AND ("users"."name" = $2 OR "users"."name" = $3))`
+        `WHERE ("users"."age" > $1 AND ("users"."name" = $2 OR "users"."name" = $3))`,
       );
       expect(result.values).toEqual([18, "John", "Jane"]);
     });
@@ -134,7 +142,7 @@ describe("SelectQueryBuilder", () => {
       const result = builder.join(join).build();
 
       expect(result.sql).toContain(
-        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`
+        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`,
       );
       expect(result.values).toEqual([]);
     });
@@ -153,9 +161,11 @@ describe("SelectQueryBuilder", () => {
       const result = builder.join(join).build();
 
       expect(result.sql).toContain(
-        `LEFT JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`
+        `LEFT JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`,
       );
-      expect(result.sql).toContain(`json_build_object('name', "roles"."name", 'description', "roles"."description") AS roles`);
+      expect(result.sql).toContain(
+        `json_build_object('name', "roles"."name", 'description', "roles"."description") AS roles`,
+      );
       expect(result.values).toEqual([]);
     });
   });
@@ -181,7 +191,9 @@ describe("SelectQueryBuilder", () => {
 
       const result = builder.orderBy(orderBy).build();
 
-      expect(result.sql).toContain(`ORDER BY "users"."name" ASC NULLS FIRST, "users"."age" DESC NULLS LAST`);
+      expect(result.sql).toContain(
+        `ORDER BY "users"."name" ASC NULLS FIRST, "users"."age" DESC NULLS LAST`,
+      );
       expect(result.values).toEqual([]);
     });
   });
@@ -244,7 +256,7 @@ describe("SelectQueryBuilder", () => {
       expect(result.sql).toContain(`SELECT "users"."name","users"."email"`);
       expect(result.sql).toContain(`FROM "users"`);
       expect(result.sql).toContain(
-        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`
+        `INNER JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`,
       );
       expect(result.sql).toContain(`WHERE "users"."age" > $1`);
       expect(result.sql).toContain(`ORDER BY "users"."name" ASC NULLS FIRST`);
