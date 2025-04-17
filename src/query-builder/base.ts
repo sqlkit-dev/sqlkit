@@ -2,7 +2,7 @@ import { QueryResult, SqlExecutor } from "../types";
 import { SQLKITException } from "../exceptions";
 
 export abstract class BaseQueryBuilder<T> {
-  protected constructor(
+  constructor(
     protected readonly tableName: string,
     protected readonly executor?: SqlExecutor<T>,
   ) {}
