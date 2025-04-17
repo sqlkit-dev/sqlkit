@@ -1,6 +1,12 @@
-import { SqlExecutor } from "../types";
-import { PaginatedResult, PaginationMeta, PaginationOptions } from "../types";
-import { Join, OrderBy, QueryRowsPayload, WhereCondition } from "../types";
+import {
+  Join,
+  OrderBy,
+  PaginatedResult,
+  PaginationMeta,
+  PaginationOptions,
+  QueryRowsPayload,
+  WhereCondition,
+} from "../types";
 import {
   buildJoinClause,
   buildOrderByClause,
@@ -10,10 +16,6 @@ import { BaseQueryBuilder } from "./base";
 
 export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
   private payload: QueryRowsPayload<T> = {};
-
-  constructor(tableName: string, executor: SqlExecutor) {
-    super(tableName, executor);
-  }
 
   select(columns?: Array<keyof T>): this {
     this.payload.columns = columns;

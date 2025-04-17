@@ -1,14 +1,9 @@
-import { SqlExecutor } from "../types";
 import { UpdatePayload, WhereCondition } from "../types";
 import { buildSetClause, buildWhereClause } from "../utils";
 import { BaseQueryBuilder } from "./base";
 
 export class UpdateQueryBuilder<T> extends BaseQueryBuilder<T> {
   private payload: UpdatePayload<T> = { where: {}, data: {} };
-
-  constructor(tableName: string, executor: SqlExecutor) {
-    super(tableName, executor);
-  }
 
   set(data: Partial<T>): this {
     this.payload.data = data;

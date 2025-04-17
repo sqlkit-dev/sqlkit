@@ -1,14 +1,9 @@
-import { SqlExecutor } from "../types";
 import { toSnakeCase } from "../utils";
 import { BaseQueryBuilder } from "./base";
 
 export class InsertQueryBuilder<T> extends BaseQueryBuilder<T> {
   private data: Partial<T> | Partial<T>[] = {};
   private returningColumns: Array<keyof T> = ["*"] as any;
-
-  constructor(tableName: string, executor: SqlExecutor) {
-    super(tableName, executor);
-  }
 
   values(data: Partial<T> | Partial<T>[]): this {
     this.data = data;

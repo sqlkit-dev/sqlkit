@@ -2,6 +2,6 @@ export interface QueryResult {
   rows: any[];
 }
 
-export interface SqlExecutor {
-  executeSQL(sql: string, values: any[]): Promise<QueryResult>;
+export interface SqlExecutor<T = any> {
+  executeSQL(sql: string, values: T[]): Promise<QueryResult>;
 }

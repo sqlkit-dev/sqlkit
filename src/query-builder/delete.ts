@@ -1,4 +1,3 @@
-import { SqlExecutor } from "../types";
 import { WhereCondition } from "../types";
 import { buildWhereClause } from "../utils";
 import { BaseQueryBuilder } from "./base";
@@ -6,10 +5,6 @@ import { BaseQueryBuilder } from "./base";
 export class DeleteQueryBuilder<T> extends BaseQueryBuilder<T> {
   private whereCondition?: WhereCondition<T>;
   private returningColumns: Array<keyof T | "*"> = ["*"] as any;
-
-  constructor(tableName: string, executor: SqlExecutor) {
-    super(tableName, executor);
-  }
 
   where(condition: WhereCondition<T>): this {
     this.whereCondition = condition;

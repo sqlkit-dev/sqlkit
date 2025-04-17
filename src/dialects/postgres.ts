@@ -1,20 +1,19 @@
-import { QueryResult, SqlExecutor } from "../types/common";
+import { Pool } from "pg";
+import { QueryResult, SqlExecutor } from "../types";
+import { SQLKITException } from "../exceptions";
 
 export class PostgresAdapter implements SqlExecutor {
-  constructor(private client: any) {}
+  constructor(private pgPool: Pool) {}
 
   async executeSQL<T>(sql: string, values: any[]): Promise<QueryResult> {
-    try {
-      const result = await this.client.query(sql, values);
-      this.client.release();
-      return { rows: result.rows as T[] };
-    } catch (error) {
-      throw new Error(`PostgreSQL error: ${(error as Error).message}`);
-    } finally {
-      // Ensure the client is released back to the pool
-      if (this.client.release) {
-        this.client.release();
-      }
-    }
+    return new Promise((resolve, reject) => {
+      this.pgPool.query<T>(sql, values, (err, result) => {
+        if (err) {
+          reject(new SQLKITException(err.message));
+        } else {
+          resolve(result);
+        }
+      });
+    });
   }
 }

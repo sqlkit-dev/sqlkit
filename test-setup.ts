@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import * as pg from "pg";
 import { PostgresAdapter, Table } from "./src";
 import {
@@ -7,9 +8,6 @@ import {
   uuid,
   varchar,
 } from "./src/types/column-type";
-import { faker } from "@faker-js/faker";
-
-const { Pool } = pg;
 
 // Test database configuration
 const TEST_DB_CONFIG = {
@@ -20,11 +18,8 @@ const TEST_DB_CONFIG = {
   password: process.env.TEST_DB_PASSWORD || "rayhan123",
 };
 
-// Create a test database connection pool
-export const pool = new Pool(TEST_DB_CONFIG);
-
 // Create a real executor for testing
-export const executor = new PostgresAdapter(pool);
+export const executor = new PostgresAdapter(new pg.Pool(TEST_DB_CONFIG));
 
 // Create test tables
 export async function setupTestTables() {
@@ -68,58 +63,64 @@ export async function setupTestTables() {
   const createTagsTableSql = tagTable.createTableSql();
   const createPostTagPivotTableSql = articleTagPivotTable.createTableSql();
 
-  await pool.query(createUserTableSQL);
-  await pool.query(createPostsTableSql);
-  await pool.query(createTagsTableSql);
-  await pool.query(createPostTagPivotTableSql);
+  await executor.executeSQL(createUserTableSQL, []);
+  await executor.executeSQL(createPostsTableSql, []);
+  await executor.executeSQL(createTagsTableSql, []);
+  await executor.executeSQL(createPostTagPivotTableSql, []);
 }
 
 // Clean up test tables
 export async function cleanupTestTables() {
-  await pool.query(`
+  await executor.executeSQL(
+    `
     DROP TABLE IF EXISTS users CASCADE;
     DROP TABLE IF EXISTS posts CASCADE;
     DROP TABLE IF EXISTS tags CASCADE;
     DROP TABLE IF EXISTS post_tag_pivot CASCADE;
-  `);
+  `,
+    []
+  );
 }
 
 // Clean up test data
 export async function cleanupTestData() {
-  await pool.query(`
+  await executor.executeSQL(
+    `
     TRUNCATE TABLE users CASCADE;
     TRUNCATE TABLE posts CASCADE;
     TRUNCATE TABLE tags CASCADE;
     TRUNCATE TABLE post_tag_pivot CASCADE;
-  `);
+  `,
+    []
+  );
 }
 
 // Seed test data: Creates 5 users, each with 5-10 posts, and assigns tags to posts through a pivot table.
 export async function seedTestData() {
   // Seed users
   const userInsertPromises = Array.from({ length: 5 }).map(() => {
-    return pool.query(
+    return executor.executeSQL(
       `INSERT INTO users (name, email, age, bio) VALUES ($1, $2, $3, $4)`,
       [
         faker.person.fullName(),
         faker.internet.email(),
         faker.number.int({ min: 18, max: 99 }),
         faker.lorem.sentence(),
-      ],
+      ]
     );
   });
   await Promise.all(userInsertPromises);
 
   // Seed posts
-  const userIds = (await pool.query(`SELECT id FROM users`)).rows.map(
-    (row) => row.id,
-  );
+  const userIds = (
+    await executor.executeSQL(`SELECT id FROM users`, [])
+  ).rows.map((row) => row.id);
   const postInsertPromises = userIds.flatMap((userId) => {
     const postCount = faker.number.int({ min: 5, max: 10 });
     return Array.from({ length: postCount }).map(() => {
-      return pool.query(
+      return executor.executeSQL(
         `INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3)`,
-        [faker.lorem.words(3), faker.lorem.paragraph(), userId],
+        [faker.lorem.words(3), faker.lorem.paragraph(), userId]
       );
     });
   });
@@ -127,26 +128,26 @@ export async function seedTestData() {
 
   // Seed tags
   const tagInsertPromises = Array.from({ length: 5 }).map(() => {
-    return pool.query(`INSERT INTO tags (title) VALUES ($1)`, [
+    return executor.executeSQL(`INSERT INTO tags (title) VALUES ($1)`, [
       faker.lorem.word(),
     ]);
   });
   await Promise.all(tagInsertPromises);
 
   // Seed post_tag_pivot
-  const postIds = (await pool.query(`SELECT id FROM posts`)).rows.map(
-    (row) => row.id,
-  );
-  const tagIds = (await pool.query(`SELECT id FROM tags`)).rows.map(
-    (row) => row.id,
-  );
+  const postIds = (
+    await executor.executeSQL(`SELECT id FROM posts`, [])
+  ).rows.map((row) => row.id);
+  const tagIds = (
+    await executor.executeSQL(`SELECT id FROM tags`, [])
+  ).rows.map((row) => row.id);
   const pivotInsertPromises = postIds.flatMap((postId) => {
     const tagCount = faker.number.int({ min: 1, max: tagIds.length });
     const selectedTags = faker.helpers.arrayElements(tagIds, tagCount);
     return selectedTags.map((tagId) => {
-      return pool.query(
+      return executor.executeSQL(
         `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
-        [postId, tagId],
+        [postId, tagId]
       );
     });
   });
