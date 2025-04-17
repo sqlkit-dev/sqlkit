@@ -1,4 +1,4 @@
-import { Join, OrderBy, SimpleWhere, WhereCondition } from "../types";
+import {Join, ManyToManyJoin, OrderBy, SimpleWhere, WhereCondition} from "../types";
 import { toSnakeCase } from "./formatting";
 
 /**
@@ -180,6 +180,48 @@ export const buildJoinClause = <T>(
     joinSelectClause
   };
 };
+
+
+/**
+ * Builds JOIN clauses for SQL queries
+ */
+// export const buildJoinManyToManyClause = <T>(
+//     joins?: Array<ManyToManyJoin<any, any>>,
+//     baseTableName?: string
+// ): { joinConditionClause: string; joinSelectClause: string[] } => {
+//   if (!joins || joins.length === 0) {
+//     return {
+//       joinConditionClause: "",
+//       joinSelectClause: []
+//     };
+//   }
+
+//   const joinConditions = joins.map((join) => {
+//     const joinType = join.type.toUpperCase();
+//     const alias = join.as || join.table;
+//     const foreignField = join.on.foreignField as any;
+//     const localField = join.on.localField as any;
+//     return `${joinType} JOIN "${join.table}" AS "${alias}" ON "${alias}"."${foreignField}" = "${baseTableName}"."${localField}"`;
+//   });
+//
+//   const joinSelectClause = joins
+//       .map((join) => {
+//         if (!join.columns || join.columns.length === 0) return "";
+//
+//         const alias = join.as || join.table;
+//         const jsonColumns = join.columns
+//             .map((col) => `'${col.toString()}', "${alias}"."${col.toString()}"`)
+//             .join(", ");
+//
+//         return `json_build_object(${jsonColumns}) AS ${alias}`;
+//       })
+//       .filter(Boolean);
+//
+//   return {
+//     joinConditionClause: joinConditions.join(" "),
+//     joinSelectClause
+//   };
+// };
 
 /**
  * Builds a SET clause for UPDATE SQL statements with proper type handling

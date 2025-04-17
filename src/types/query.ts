@@ -45,9 +45,20 @@ export interface Join<T, F> {
   columns?: Array<keyof F>;
 }
 
+export interface ManyToManyJoin<Pivot,Foreign> {
+  table: string;
+  as?: string;
+  on: {
+    localField: keyof Pivot;
+    foreignField: keyof Pivot;
+  };
+  columns?: Array<keyof Foreign>;
+}
+
 export interface QueryRowsPayload<T> {
   where?: WhereCondition<T>;
   joins?: Join<T, any>[];
+  with?: ManyToManyJoin<any, any>[];
   orderBy?: Array<OrderBy<T>>;
   columns?: Array<keyof T>;
   limit?: number;
