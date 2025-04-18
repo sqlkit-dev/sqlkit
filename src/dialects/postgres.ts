@@ -4,7 +4,7 @@ import { SQLKITException } from "../exceptions";
 export class PostgresAdapter implements SqlExecutor {
   constructor(private pgPool: any) {}
 
-  async executeSQL<T>(sql: string, values: any[]): Promise<QueryResult> {
+  async executeSQL<T>(sql: string, values: any[]): Promise<QueryResult<T>> {
     return new Promise((resolve, reject) => {
       this.pgPool.query(sql, values, (err, result) => {
         if (err) {

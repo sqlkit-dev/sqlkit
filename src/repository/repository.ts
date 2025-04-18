@@ -13,15 +13,27 @@ import {
 } from "../types";
 import { buildWhereClause } from "../utils";
 
+interface RepositoryOptions {
+  logging?: boolean;
+}
+
 export class Repository<T> {
   constructor(
     protected readonly tableName: string,
-    protected readonly executor: SqlExecutor
+    protected readonly executor: SqlExecutor,
+    protected options?: RepositoryOptions
   ) {}
 
   async findRow(where: WhereCondition<T>): Promise<T | null> {
     const builder = new SelectQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder.where(where).limit(1).commit();
+    if (this.options?.logging) {
+      console.log({
+        sql: builder.build().sql,
+        values: builder.build().values,
+        result: result.rows[0]
+      });
+    }
     return result.rows[0] ?? null;
   }
 
@@ -34,9 +46,15 @@ export class Repository<T> {
     if (payload?.orderBy) builder.orderBy(payload.orderBy);
     if (payload?.limit) builder.limit(payload.limit);
     if (payload?.offset) builder.offset(payload.offset);
-    // console.log(builder.build().sql);
-    // console.log(builder.build().values);
     const result = await builder.commit();
+
+    if (this.options?.logging) {
+      console.log({
+        sql: builder.build().sql,
+        values: builder.build().values,
+        result: result.rows[0]
+      });
+    }
     return result.rows;
   }
 
@@ -76,6 +94,13 @@ export class Repository<T> {
   ): Promise<T> {
     const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder.values(data).returning(returning).commit();
+    if (this.options?.logging) {
+      console.log({
+        sql: builder.build().sql,
+        values: builder.build().values,
+        result: result.rows[0]
+      });
+    }
     return result.rows[0];
   }
 
@@ -85,6 +110,13 @@ export class Repository<T> {
   ): Promise<T[]> {
     const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder.values(data).returning(returning).commit();
+    if (this.options?.logging) {
+      console.log({
+        sql: builder.build().sql,
+        values: builder.build().values,
+        result: result.rows[0]
+      });
+    }
     return result.rows;
   }
 
@@ -101,17 +133,32 @@ export class Repository<T> {
       .where(where)
       .returning(returning)
       .commit();
+    if (this.options?.logging) {
+      console.log({
+        sql: builder.build().sql,
+        values: builder.build().values,
+        result: result.rows[0]
+      });
+    }
     return result.rows[0] ?? null;
   }
 
-  async delete(
-    arg: {
-      where: WhereCondition<T>;
-      returning?: Array<keyof T>;
-    }
-  ): Promise<T | null> {
+  async delete(arg: {
+    where: WhereCondition<T>;
+    returning?: Array<keyof T>;
+  }): Promise<T | null> {
     const builder = new DeleteQueryBuilder<T>(this.tableName, this.executor);
-    const result = await builder.where(arg.where).returning(arg.returning).commit();
+    const result = await builder
+      .where(arg.where)
+      .returning(arg.returning)
+      .commit();
+    if (this.options?.logging) {
+      console.log({
+        sql: builder.build().sql,
+        values: builder.build().values,
+        result: result.rows[0]
+      });
+    }
     return result.rows[0] ?? null;
   }
 }

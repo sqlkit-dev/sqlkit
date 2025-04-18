@@ -1,13 +1,5 @@
-import {
-  cleanupTestTables,
-  DomainPost,
-  DomainUser,
-  executor,
-  seedTestData,
-  setupTestTables,
-} from "../../test-setup";
-import { Repository } from "../../src";
-import { asc, desc } from "../../src";
+import {cleanupTestTables, DomainPost, DomainUser, executor, seedTestData, setupTestTables,} from "../../test-setup";
+import {asc, desc, Repository} from "../../src";
 
 describe("Repository Pagination", () => {
   let postRepository: Repository<DomainPost>;
@@ -79,4 +71,27 @@ describe("Repository Pagination", () => {
       );
     }
   });
+
+  it('Should return all result when limit is -1', async () => {
+    const countQuery = await executor.executeSQL<{ count: 0 }>(`
+      SELECT COUNT(*) as count
+      FROM "posts"
+    `, []);
+
+    const page = await postRepository.paginate({
+      page: 1,
+      limit: -1,
+    });
+
+    expect(page.meta.totalCount).toBe(+countQuery.rows[0].count);
+    expect(page.nodes.length).toBe(+countQuery.rows[0].count);
+  })
+
+  it('Should return 10 result when limit is not provided', async () => {
+    const page = await postRepository.paginate({
+      page: 1,
+    });
+
+    expect(page.nodes.length).toBe(10);
+  })
 });

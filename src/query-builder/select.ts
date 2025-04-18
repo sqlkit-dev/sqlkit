@@ -92,17 +92,17 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
       ${joinConditionClause ? joinConditionClause : ""}
       ${whereClause ? `WHERE ${whereClause}` : ""}
       ${orderByClause ? orderByClause : ""}
-      ${limit ? `LIMIT ${limit}` : ""} ${offset ? `OFFSET ${offset}` : ""};
+      ${limit != -1 ? `LIMIT ${limit}` : ""} ${offset ? `OFFSET ${offset}` : ""};
     `;
 
     return { sql, values };
   }
 
   async paginate(options: PaginationOptions<T>): Promise<PaginatedResult<T>> {
-    if(!this?.executor){
+    if (!this?.executor) {
       throw new SQLKITException("Executor is not set for the query builder.");
     }
-    
+
     const limit = options.limit || 10;
     const page = options.page || 1;
     const offset = (page - 1) * limit;
