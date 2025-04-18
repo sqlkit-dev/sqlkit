@@ -1,0 +1,19 @@
+{
+  "name": "sqlkit-node",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "kingrayhan",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "pg": "^8.14.1",
+    "sqlkit": "^1.0.9"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.13"
+  }
+}
