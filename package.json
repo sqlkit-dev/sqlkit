@@ -1,6 +1,6 @@
 {
   "name": "sqlkit",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A lightweight SQL builder for TypeScript",
   "license": "MIT",
   "author": {
@@ -15,6 +15,9 @@
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
   "module": "dist/index.mjs",
+   "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pkgroll --sourcemap --clean-dist --minify",
     "tinker": "npx tsx watch src/tinker.ts",
