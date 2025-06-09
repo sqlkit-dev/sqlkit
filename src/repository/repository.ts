@@ -101,7 +101,7 @@ export class Repository<T> {
     where: WhereCondition<T>;
     data: Partial<T>;
     returning?: Array<keyof T>;
-  }): Promise<QueryResult<T> | null> {
+  }): Promise<QueryResult<T>> {
     const { where, data, returning = ["*"] as any } = args;
 
     const builder = new UpdateQueryBuilder<T>(this.tableName, this.executor);

@@ -84,14 +84,14 @@ describe("Repository Update", () => {
     });
   });
 
-  it("should return null if the record to update does not exist", async () => {
+  it("should return empty array if the record to update does not exist", async () => {
     const result = await postRepository.update({
       where: like("title", "%post-not-exists%"),
       data: {
         title: "Non-existent Post",
       },
     });
-    expect(result).toBeNull();
+    expect(result.rowCount).toBe(0)
   });
 
   it("should not update fields that are not provided", async () => {
