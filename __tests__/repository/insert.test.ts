@@ -23,11 +23,11 @@ describe("Repository - insertMany", () => {
       { name: "John Doe", email: "john@example.com", age: 30 },
       { name: "Jane Smith", email: "jane@example.com", age: 25 },
     ];
-    const result = await repository.insertMany(records);
+    const result = await repository.insert(records);
 
-    expect(result).toHaveLength(2);
-    expect(result[0]).toMatchObject(records[0]);
-    expect(result[1]).toMatchObject(records[1]);
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows[0]).toMatchObject(records[0]);
+    expect(result.rows[1]).toMatchObject(records[1]);
 
     const insertedRecords = await executor.executeSQL(
       "SELECT * FROM users WHERE email IN ($1, $2)",
@@ -44,12 +44,12 @@ describe("Repository - insertMany", () => {
   });
 
   it("should throw an error if one of the records violates constraints", async () => {
-    const records = [
+    const records: DomainUser[] | {[key:string]: any} = [
       { name: "Valid User", email: "valid@example.com", age: 40 },
       { name: null, email: "invalid@example.com" }, // Assuming 'name' cannot be null
     ];
 
-    // @ts-ignore
-    await expect(repository.insertMany(records)).rejects.toThrow();
+    
+    await expect(repository.insert(records as any)).rejects.toThrow();
   });
 });

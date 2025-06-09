@@ -114,8 +114,9 @@ export async function seedTestData() {
   // Seed posts
   const userIds = (
     await executor.executeSQL(`SELECT id FROM users`, [])
-  ).rows.map((row) => row.id);
-  const postInsertPromises = userIds.flatMap((userId) => {
+  ).rows.map((row: any) => (row as any).id);
+
+  const postInsertPromises = userIds.flatMap((userId: any) => {
     const postCount = faker.number.int({ min: 5, max: 10 });
     return Array.from({ length: postCount }).map(() => {
       return executor.executeSQL(
@@ -137,14 +138,14 @@ export async function seedTestData() {
   // Seed post_tag_pivot
   const postIds = (
     await executor.executeSQL(`SELECT id FROM posts`, [])
-  ).rows.map((row) => row.id);
+  ).rows.map((row: any) => (row as any).id);
   const tagIds = (
     await executor.executeSQL(`SELECT id FROM tags`, [])
-  ).rows.map((row) => row.id);
-  const pivotInsertPromises = postIds.flatMap((postId) => {
+  ).rows.map((row: any) => (row as any).id);
+  const pivotInsertPromises = postIds.flatMap((postId: any) => {
     const tagCount = faker.number.int({ min: 1, max: tagIds.length });
     const selectedTags = faker.helpers.arrayElements(tagIds, tagCount);
-    return selectedTags.map((tagId) => {
+    return selectedTags.map((tagId: any) => {
       return executor.executeSQL(
         `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
         [postId, tagId],

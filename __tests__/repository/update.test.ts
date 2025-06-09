@@ -25,8 +25,8 @@ describe("Repository Update", () => {
       executor.executeSQL(`SELECT * FROM posts`, []),
       executor.executeSQL(`SELECT * FROM users`, []),
     ]);
-    users = fetchedRows[1].rows;
-    posts = fetchedRows[0].rows;
+    users = fetchedRows[1].rows as DomainUser[];
+    posts = fetchedRows[0].rows as DomainPost[];
   });
 
   afterAll(async () => {
@@ -35,7 +35,7 @@ describe("Repository Update", () => {
 
   it("should update a single post correctly", async () => {
     const targetPost = posts[0];
-    const updatedPost = await postRepository.update({
+    const updatedPostResponse = await postRepository.update({
       where: eq("id", targetPost.id),
       data: {
         title: "Updated Title",
@@ -43,6 +43,7 @@ describe("Repository Update", () => {
       returning: ["title"],
     });
 
+    const updatedPost = updatedPostResponse?.rows[0];
     expect(updatedPost).toBeDefined();
     expect(updatedPost?.title).toBe("Updated Title");
 
@@ -59,13 +60,14 @@ describe("Repository Update", () => {
 
   it("should update multiple fields of a user correctly", async () => {
     const targetUser = users[0];
-    const updatedUser = await userRepository.update({
+    const updatedUserResponse = await userRepository.update({
       where: eq("id", targetUser.id),
       data: {
         name: "Updated Name",
         age: 30,
       },
     });
+    const updatedUser = updatedUserResponse?.rows[0];
     expect(updatedUser).toBeDefined();
     expect(updatedUser?.name).toBe("Updated Name");
     expect(updatedUser?.age).toBe(30);
@@ -101,12 +103,13 @@ describe("Repository Update", () => {
     const originalUser = fetchedUsers.rows[0];
     expect(originalUser).toBeDefined();
 
-    const updatedUser = await userRepository.update({
+    const updatedUserResponse = await userRepository.update({
       where: eq("id", targetUser.id),
       data: {
         name: "Partially Updated Name",
       },
     });
+    const updatedUser = updatedUserResponse?.rows[0];
     expect(updatedUser).toBeDefined();
     expect(updatedUser?.name).toBe("Partially Updated Name");
     expect(updatedUser?.age).toBe(originalUser?.age); // Age should remain unchanged

@@ -7,6 +7,7 @@ import {
 import {
   PaginatedResult,
   PaginationOptions,
+  QueryResult,
   QueryRowsPayload,
   SqlExecutor,
   WhereCondition
@@ -24,20 +25,9 @@ export class Repository<T> {
     protected options?: RepositoryOptions
   ) {}
 
-  async findRow(where: WhereCondition<T>): Promise<T | null> {
-    const builder = new SelectQueryBuilder<T>(this.tableName, this.executor);
-    const result = await builder.where(where).limit(1).commit();
-    if (this.options?.logging) {
-      console.log({
-        sql: builder.build().sql,
-        values: builder.build().values,
-        result: result.rows[0]
-      });
-    }
-    return result.rows[0] ?? null;
-  }
 
-  async findRows(payload?: QueryRowsPayload<T>): Promise<T[]> {
+
+  async find(payload?: QueryRowsPayload<T>): Promise<T[]> {
     const builder = new SelectQueryBuilder<T>(this.tableName, this.executor);
     if (payload?.where) builder.where(payload.where);
     if (payload?.joins) {
@@ -46,15 +36,17 @@ export class Repository<T> {
     if (payload?.orderBy) builder.orderBy(payload.orderBy);
     if (payload?.limit) builder.limit(payload.limit);
     if (payload?.offset) builder.offset(payload.offset);
+
     const result = await builder.commit();
 
     if (this.options?.logging) {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result.rows[0]
+        result: result
       });
     }
+     
     return result.rows;
   }
 
@@ -88,43 +80,28 @@ export class Repository<T> {
     return parseInt(result.rows[0].count, 10);
   }
 
-  async insertOne(
-    data: Partial<T>,
-    returning: Array<keyof T> = ["*"] as any
-  ): Promise<T> {
-    const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
-    const result = await builder.values(data).returning(returning).commit();
-    if (this.options?.logging) {
-      console.log({
-        sql: builder.build().sql,
-        values: builder.build().values,
-        result: result.rows[0]
-      });
-    }
-    return result.rows[0];
-  }
 
-  async insertMany(
+  async insert(
     data: Partial<T>[],
     returning: Array<keyof T> = ["*"] as any
-  ): Promise<T[]> {
+  ): Promise<QueryResult<T>> {
     const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder.values(data).returning(returning).commit();
     if (this.options?.logging) {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result.rows[0]
+        result: result.rows
       });
     }
-    return result.rows;
+    return result;
   }
 
   async update(args: {
     where: WhereCondition<T>;
     data: Partial<T>;
     returning?: Array<keyof T>;
-  }): Promise<T | null> {
+  }): Promise<QueryResult<T> | null> {
     const { where, data, returning = ["*"] as any } = args;
 
     const builder = new UpdateQueryBuilder<T>(this.tableName, this.executor);
@@ -133,20 +110,23 @@ export class Repository<T> {
       .where(where)
       .returning(returning)
       .commit();
+
+
     if (this.options?.logging) {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result.rows[0]
+        result: result
       });
     }
-    return result.rows[0] ?? null;
+
+    return result
   }
 
   async delete(arg: {
     where: WhereCondition<T>;
     returning?: Array<keyof T>;
-  }): Promise<T | null> {
+  }): Promise<QueryResult<T> | null> {
     const builder = new DeleteQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder
       .where(arg.where)
@@ -156,9 +136,9 @@ export class Repository<T> {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result.rows[0]
+        result: result.rows
       });
     }
-    return result.rows[0] ?? null;
+    return result
   }
 }

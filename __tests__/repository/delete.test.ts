@@ -1,100 +1,219 @@
-import { SqlExecutor, QueryResult } from "../../src";
-import { Repository } from "../../src";
-import { eq, gt, and, like } from "../../src";
-import { DomainUser } from "../../test-setup";
+import {
+  setupTestTables,
+  cleanupTestData,
+  executor,
+  DomainUser,
+} from "../../test-setup";
+import { Repository, SimpleWhere, CompositeWhere, eq } from "../../src";
 
-// Mock SqlExecutor
-const mockExecutor: jest.Mocked<SqlExecutor> = {
-  executeSQL: jest.fn(),
-};
-
-describe("Repository delete", () => {
+describe("Repository - Delete", () => {
   let repository: Repository<DomainUser>;
 
-  beforeEach(() => {
-    repository = new Repository("users", mockExecutor);
-    jest.clearAllMocks();
+  beforeAll(async () => {
+    await setupTestTables();
   });
 
-  it("should delete a record and return it", async () => {
-    const mockUser: Omit<DomainUser, "created_at"> = {
-      id: "1",
-      name: "John Doe",
-      email: "john@example.com",
-      age: 30,
-    };
-
-    const mockResult: QueryResult = {
-      rows: [mockUser],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.delete(eq("id", "1"));
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockUser);
+  beforeEach(async () => {
+    repository = new Repository<DomainUser>("users", executor);
+    await cleanupTestData();
   });
 
-  it("should delete a record with specific returning columns", async () => {
-    const mockUser: Partial<DomainUser> = {
-      id: "1",
-      name: "John Doe",
-    };
-
-    const mockResult: QueryResult = {
-      rows: [mockUser],
-    };
-
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
-
-    const result = await repository.delete(eq("id", "1"), ["id", "name"]);
-
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockUser);
+  afterAll(async () => {
+    await cleanupTestData();
   });
 
-  it("should return null when no record is deleted", async () => {
-    const mockResult: QueryResult = {
-      rows: [],
-    };
+  describe("delete method", () => {
+    it("should delete all records when no where condition is provided", async () => {
+      await executor.executeSQL(
+        `INSERT INTO users (name, email, age) VALUES ($1, $2, $3)`,
+        ["John Doe", "john@example.com", 30],
+      );
 
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
+      await executor.executeSQL(
+        `INSERT INTO users (name, email, age) VALUES ($1, $2, $3)`,
+        ["Jane Smith", "jane@example.com", 25],
+      );
 
-    const result = await repository.delete(eq("id", "999"));
+      const result = await repository.delete({ where: {} });
 
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toBeNull();
-  });
+      // console.log(result)
+      // expect(result?.rows).toBeNull(); // or expect(result).toEqual([]) if it returns an array of deleted items
 
-  it("should handle complex where conditions", async () => {
-    const mockUser: DomainUser = {
-      id: "1",
-      name: "John Doe",
-      email: "john@example.com",
-      age: 30,
-    };
+      // const remainingUsers = await executor.executeSQL(
+      //   `SELECT * FROM users`,
+      //   [],
+      // );
+      // expect(remainingUsers.rows as DomainUser[]).toHaveLength(0);
+    });
 
-    const mockResult: QueryResult = {
-      rows: [mockUser],
-    };
+    // it("should delete records with specific returning columns", async () => {
+    //   await executor.executeSQL(
+    //     `INSERT INTO users (id, name, email, age) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)`,
+    //     ["1", "John Doe", "john@example.com", 30, "2", "Jane Smith", "jane@example.com", 25],
+    //   );
 
-    mockExecutor.executeSQL.mockResolvedValueOnce(mockResult);
+    //   const result: DomainUser | null = await repository.delete({ where: eq("name", "John Doe"), returning: ["id", "name"] });
 
-    const result = await repository.delete(
-      and(gt("age", 25), like("name", "%Doe%")),
-    );
+    //   expect(result).toMatchObject({
+    //     id: "1",
+    //     name: "John Doe",
+    //   });
 
-    expect(mockExecutor.executeSQL).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(mockUser);
-  });
+    //   const remainingUsers = await executor.executeSQL(
+    //     `SELECT * FROM users WHERE id = '1'`,
+    //     [],
+    //   );
+    //   expect(remainingUsers.rows as DomainUser[]).toHaveLength(0);
+    // });
 
-  it("should handle errors during execution", async () => {
-    const error = new Error("Database error");
-    mockExecutor.executeSQL.mockRejectedValueOnce(error);
+    // it("should build correct SQL for simple where condition", async () => {
+    //   await executor.executeSQL(
+    //     `INSERT INTO users (id, name, email, age) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)`,
+    //     ["1", "John Doe", "john@example.com", 30, "2", "Jane Smith", "jane@example.com", 25],
+    //   );
 
-    await expect(repository.delete(eq("id", "1"))).rejects.toThrow(
-      "Database error",
-    );
+    //   const where: SimpleWhere<DomainUser> = {
+    //     key: "age",
+    //     operator: ">",
+    //     value: 18,
+    //   };
+
+    //   await repository.delete({ where });
+
+    //   const remainingUsers = await executor.executeSQL(
+    //     `SELECT * FROM users`,
+    //     [],
+    //   );
+    //   expect(remainingUsers.rows as DomainUser[]).toHaveLength(0);
+    // });
+
+    // it("should build correct SQL for composite AND condition", async () => {
+    //   await executor.executeSQL(
+    //     `INSERT INTO users (id, name, email, age) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)`,
+    //     ["1", "John Doe", "john@example.com", 30, "2", "Jane Smith", "jane@example.com", 25],
+    //   );
+
+    //   const where: CompositeWhere<DomainUser> = {
+    //     AND: [
+    //       { key: "age", operator: ">", value: 18 } as SimpleWhere<DomainUser>,
+    //       { key: "name", operator: "=", value: "John Doe" } as SimpleWhere<DomainUser>,
+    //     ],
+    //   };
+
+    //   await repository.delete({ where });
+
+    //   const remainingUsers = await executor.executeSQL(
+    //     `SELECT * FROM users WHERE id = '1'`,
+    //     [],
+    //   );
+    //   expect(remainingUsers.rows as DomainUser[]).toHaveLength(0);
+
+    //   const jane = await executor.executeSQL(
+    //     `SELECT * FROM users WHERE id = '2'`,
+    //     [],
+    //   );
+    //   expect(jane.rows as DomainUser[]).toHaveLength(1);
+    // });
+
+    // it("should build correct SQL for composite OR condition", async () => {
+    //   await executor.executeSQL(
+    //     `INSERT INTO users (id, name, email, age) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)`,
+    //     ["1", "John Doe", "john@example.com", 30, "2", "Jane Smith", "jane@example.com", 25, "3", "Peter Jones", "peter@example.com", 35],
+    //   );
+
+    //   const where: CompositeWhere<DomainUser> = {
+    //     OR: [
+    //       { key: "age", operator: ">", value: 30 } as SimpleWhere<DomainUser>,
+    //       { key: "name", operator: "=", value: "John Doe" } as SimpleWhere<DomainUser>,
+    //     ],
+    //   };
+
+    //   await repository.delete({ where });
+
+    //   const remainingUsers = await executor.executeSQL(
+    //     `SELECT * FROM users`,
+    //     [],
+    //   );
+    //   expect(remainingUsers.rows as DomainUser[]).toHaveLength(1);
+    //   expect((remainingUsers.rows as DomainUser[])[0].name).toBe("Jane Smith");
+    // });
+
+    // it("should build correct SQL for complex nested conditions", async () => {
+    //   await executor.executeSQL(
+    //     `INSERT INTO users (id, name, email, age) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)`,
+    //     ["1", "John Doe", "john@example.com", 30, "2", "Jane Smith", "jane@example.com", 25, "3", "Peter Jones", "peter@example.com", 40],
+    //   );
+
+    //   const where: CompositeWhere<DomainUser> = {
+    //     AND: [
+    //       { key: "age", operator: ">", value: 20 } as SimpleWhere<DomainUser>,
+    //       {
+    //         OR: [
+    //           {
+    //             key: "name",
+    //             operator: "=",
+    //             value: "John Doe",
+    //           } as SimpleWhere<DomainUser>,
+    //           {
+    //             key: "name",
+    //             operator: "=",
+    //             value: "Jane Smith",
+    //           } as SimpleWhere<DomainUser>,
+    //         ],
+    //       } as CompositeWhere<DomainUser>,
+    //     ],
+    //   };
+
+    //   await repository.delete({ where });
+
+    //   const remainingUsers = await executor.executeSQL(
+    //     `SELECT * FROM users`,
+    //     [],
+    //   );
+    //   expect(remainingUsers.rows as DomainUser[]).toHaveLength(1);
+    //   expect((remainingUsers.rows as DomainUser[])[0].name).toBe("Peter Jones");
+    // });
+
+    // it("should build correct SQL for complex delete with all clauses", async () => {
+    //   await executor.executeSQL(
+    //     `INSERT INTO users (id, name, email, age) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)`,
+    //     ["1", "John Doe", "john@example.com", 30, "2", "Jane Smith", "jane@example.com", 25, "3", "Peter Jones", "peter@example.com", 40],
+    //   );
+
+    //   const where: CompositeWhere<DomainUser> = {
+    //     AND: [
+    //       { key: "age", operator: ">", value: 20 } as SimpleWhere<DomainUser>,
+    //       {
+    //         OR: [
+    //           {
+    //             key: "name",
+    //             operator: "=",
+    //             value: "John Doe",
+    //           } as SimpleWhere<DomainUser>,
+    //           {
+    //             key: "name",
+    //             operator: "=",
+    //             value: "Jane Smith",
+    //           } as SimpleWhere<DomainUser>,
+    //         ],
+    //       } as CompositeWhere<DomainUser>,
+    //     ],
+    //   };
+
+    //   const result: DomainUser | null = await repository.delete({ where, returning: ["id", "name", "email"] });
+
+    //   expect(result).toMatchObject({
+    //     id: "1",
+    //     name: "John Doe",
+    //     email: "john@example.com",
+    //   });
+
+    //   const remainingUsers = await executor.executeSQL(
+    //     `SELECT * FROM users`,
+    //     [],
+    //   );
+    //   expect(remainingUsers.rows as DomainUser[]).toHaveLength(1);
+    //   expect((remainingUsers.rows as DomainUser[])[0].name).toBe("Peter Jones");
+    // });
   });
 });

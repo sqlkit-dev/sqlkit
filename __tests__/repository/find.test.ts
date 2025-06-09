@@ -31,7 +31,7 @@ describe("Repository findRows", () => {
 
   describe("Comparison Operators", () => {
     it("should find rows with neq operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: neq("email", "test-not-exists@example.com"),
       });
 
@@ -41,7 +41,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with gt operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: gt("age", 30),
       });
 
@@ -49,7 +49,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with gte operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: gte("age", 30),
       });
 
@@ -57,7 +57,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with lt operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: lt("age", 40),
       });
 
@@ -65,7 +65,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with lte operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: lte("age", 40),
       });
 
@@ -73,7 +73,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with like operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: like("name", "%john%"),
       });
 
@@ -83,7 +83,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with ilike operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: ilike("name", "%JOHN%"),
       });
 
@@ -93,7 +93,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with inArray operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: inArray("email", ["test1@example.com", "test2@example.com"]),
       });
 
@@ -105,7 +105,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with notInArray operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: notInArray("email", ["test1@example.com", "test2@example.com"]),
       });
 
@@ -118,7 +118,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with isNull operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: isNull("bio"),
       });
 
@@ -126,7 +126,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with isNotNull operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: isNotNull("bio"),
       });
 
@@ -134,7 +134,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with between operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: between("age", 25, 35),
       });
 
@@ -144,7 +144,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with regexp operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: regexp("name", "^[A-Z]"),
       });
 
@@ -152,7 +152,7 @@ describe("Repository findRows", () => {
     });
 
     it("should find rows with iregexp operator", async () => {
-      const result = await repository.findRows({
+      const result = await repository.find({
         where: iregexp("name", "^[a-z]"),
       });
 

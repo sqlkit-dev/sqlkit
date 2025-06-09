@@ -82,7 +82,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
     );
 
     // Build the SQL query with LIMIT, OFFSET, and ORDER BY
-    const limit = this.payload.limit;
+    const limit = this?.payload?.limit ?? undefined;
     const offset = this.payload.offset ?? 0;
 
     const sql = `
@@ -92,7 +92,7 @@ export class SelectQueryBuilder<T> extends BaseQueryBuilder<T> {
       ${joinConditionClause ? joinConditionClause : ""}
       ${whereClause ? `WHERE ${whereClause}` : ""}
       ${orderByClause ? orderByClause : ""}
-      ${limit != -1 ? `LIMIT ${limit}` : ""} ${offset ? `OFFSET ${offset}` : ""};
+      ${(limit !== undefined && limit !== -1) ? `LIMIT ${limit}` : ""} ${offset ? `OFFSET ${offset}` : ""};
     `;
 
     return { sql, values };
