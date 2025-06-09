@@ -1,6 +1,6 @@
 {
   "name": "sqlkit",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A lightweight SQL builder for TypeScript",
   "license": "MIT",
   "author": {
