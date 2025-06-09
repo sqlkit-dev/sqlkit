@@ -80,7 +80,7 @@ const executor = new PostgresAdapter(pool);
 const userRepo = new Repository<User>("users", executor);
 
 // Find many
-const users = await userRepo.findRows<User>({
+const users = await userRepo.find({
   where: and(gt("age", 25), like("name", "%Doe%")),
 });
 
@@ -106,25 +106,25 @@ console.log(result.meta);
 */
 
 // Find one
-const user = await userRepo.findRow<User>(like("email", "%@example.com"));
+const user = await userRepo.find(like("email", "%@example.com"));
 
 // Count
-const count = await userRepo.count<User>(gt("age", 30));
+const count = await userRepo.count(gt("age", 30));
 
 // Insert
-const newUser = await userRepo.insertOne<User>({
+const newUser = await userRepo.insert({
   name: "Rayhan",
   email: "ray@example.com",
 });
 
 // Update
-const updated = await userRepo.update<User>(
+const updated = await userRepo.update(
   { name: "Ray" },
   like("email", "%ray%"),
 );
 
 // Delete
-const deleted = await userRepo.delete<User>(like("name", "Ray%"));
+const deleted = await userRepo.delete(like("name", "Ray%"));
 ```
 
 ### 🔍 Supported Operators
