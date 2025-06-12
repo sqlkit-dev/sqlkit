@@ -42,7 +42,7 @@ export class Repository<T> {
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
-          rows: result.rows,
+          rows: JSON.stringify(result.rows, null, 2),
           rowCount: result.rowCount
         }
       });
@@ -93,7 +93,7 @@ export class Repository<T> {
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
-          rows: result.rows,
+          rows: JSON.stringify(result.rows, null, 2),
           rowCount: result.rowCount
         }
       });
@@ -120,7 +120,7 @@ export class Repository<T> {
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
-          rows: result.rows,
+          rows: JSON.stringify(result.rows, null, 2),
           rowCount: result.rowCount
         }
       });
@@ -143,7 +143,7 @@ export class Repository<T> {
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
-          rows: result.rows,
+          rows: JSON.stringify(result.rows, null, 2),
           rowCount: result.rowCount
         }
       });
