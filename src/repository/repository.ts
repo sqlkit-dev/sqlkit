@@ -25,8 +25,6 @@ export class Repository<T> {
     protected options?: RepositoryOptions
   ) {}
 
-
-
   async find(payload?: QueryRowsPayload<T>): Promise<T[]> {
     const builder = new SelectQueryBuilder<T>(this.tableName, this.executor);
     if (payload?.where) builder.where(payload.where);
@@ -43,10 +41,13 @@ export class Repository<T> {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result
+        result: {
+          rows: result.rows,
+          rowCount: result.rowCount
+        }
       });
     }
-     
+
     return result.rows;
   }
 
@@ -77,9 +78,9 @@ export class Repository<T> {
     `;
 
     const result = await this.executor.executeSQL(query, values);
+
     return parseInt(result.rows[0].count, 10);
   }
-
 
   async insert(
     data: Partial<T>[],
@@ -91,7 +92,10 @@ export class Repository<T> {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result.rows
+        result: {
+          rows: result.rows,
+          rowCount: result.rowCount
+        }
       });
     }
     return result;
@@ -111,16 +115,18 @@ export class Repository<T> {
       .returning(returning)
       .commit();
 
-
     if (this.options?.logging) {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result
+        result: {
+          rows: result.rows,
+          rowCount: result.rowCount
+        }
       });
     }
 
-    return result
+    return result;
   }
 
   async delete(arg: {
@@ -136,9 +142,12 @@ export class Repository<T> {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
-        result: result.rows
+        result: {
+          rows: result.rows,
+          rowCount: result.rowCount
+        }
       });
     }
-    return result
+    return result;
   }
 }
