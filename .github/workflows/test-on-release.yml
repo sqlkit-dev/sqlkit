@@ -7,6 +7,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        database: [postgres, mysql]
     services:
       postgres:
         image: postgres:latest
@@ -22,6 +25,19 @@ jobs:
           --health-timeout 5s 
           --health-retries 5
 
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: sqlkit_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -34,5 +50,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
+      - name: Run PostgreSQL tests
+        if: matrix.database == 'postgres'
         run: npm test
+        env:
+          TEST_DB_HOST: localhost
+          TEST_DB_PORT: 5432
+          TEST_DB_NAME: tinyorm_test
+          TEST_DB_USER: rayhan
+          TEST_DB_PASSWORD: rayhan123
+
+      - name: Run MySQL tests
+        if: matrix.database == 'mysql'
+        run: npm test
+        env:
+          MYSQL_TEST_DB_HOST: localhost
+          MYSQL_TEST_DB_PORT: 3306
+          MYSQL_TEST_DB_NAME: sqlkit_test
+          MYSQL_TEST_DB_USER: root
+          MYSQL_TEST_DB_PASSWORD: password
