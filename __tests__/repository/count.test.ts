@@ -4,8 +4,8 @@ import {
   cleanupTestData,
   DomainUser,
   executor,
-  setupTestTables,
-} from "../../test-setup";
+  setupTestTables
+} from "../test-setups/pg-test-setup";
 
 describe("Repository count", () => {
   let repository: Repository<DomainUser>;
@@ -26,7 +26,7 @@ describe("Repository count", () => {
     // Insert test data
     await executor.executeSQL(
       `INSERT INTO users (name, email, age) VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`,
-      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25],
+      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25]
     );
 
     const result = await repository.count(like("name", "%Doe%"));
@@ -37,7 +37,7 @@ describe("Repository count", () => {
     // Insert test data
     await executor.executeSQL(
       `INSERT INTO users (name, email, age) VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`,
-      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25],
+      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25]
     );
 
     const result = await repository.count(gt("age", 25));
@@ -49,7 +49,7 @@ describe("Repository count", () => {
     // Insert test data
     await executor.executeSQL(
       `INSERT INTO users (name, email, age) VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`,
-      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25],
+      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25]
     );
 
     const result = await repository.count(gt("age", 100));
@@ -61,11 +61,11 @@ describe("Repository count", () => {
     // Insert test data
     await executor.executeSQL(
       `INSERT INTO users (name, email, age) VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`,
-      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25],
+      ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25]
     );
 
     const result = await repository.count(
-      and(gt("age", 25), like("name", "%Doe%")),
+      and(gt("age", 25), like("name", "%Doe%"))
     );
 
     expect(result).toBe(1);
@@ -74,7 +74,7 @@ describe("Repository count", () => {
   it("should handle errors during execution", async () => {
     // Try to count with an invalid column name
     await expect(
-      repository.count(eq("invalid_column" as any, 1)),
+      repository.count(eq("invalid_column" as any, 1))
     ).rejects.toThrow();
   });
 });

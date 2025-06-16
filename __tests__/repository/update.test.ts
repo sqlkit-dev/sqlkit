@@ -4,8 +4,8 @@ import {
   DomainUser,
   executor,
   seedTestData,
-  setupTestTables,
-} from "../../test-setup";
+  setupTestTables
+} from "../test-setups/pg-test-setup";
 import { Repository } from "../../src/repository/repository";
 import { eq, like } from "../../src";
 
@@ -23,7 +23,7 @@ describe("Repository Update", () => {
 
     const fetchedRows = await Promise.all([
       executor.executeSQL(`SELECT * FROM posts`, []),
-      executor.executeSQL(`SELECT * FROM users`, []),
+      executor.executeSQL(`SELECT * FROM users`, [])
     ]);
     users = fetchedRows[1].rows as DomainUser[];
     posts = fetchedRows[0].rows as DomainPost[];
@@ -38,9 +38,9 @@ describe("Repository Update", () => {
     const updatedPostResponse = await postRepository.update({
       where: eq("id", targetPost.id),
       data: {
-        title: "Updated Title",
+        title: "Updated Title"
       },
-      returning: ["title"],
+      returning: ["title"]
     });
 
     const updatedPost = updatedPostResponse?.rows[0];
@@ -50,11 +50,11 @@ describe("Repository Update", () => {
     // Make sure also updated in the database
     const queryResult = await executor.executeSQL<DomainPost>(
       `SELECT * FROM posts WHERE id = $1`,
-      [targetPost.id],
+      [targetPost.id]
     );
     expect(queryResult.rows[0]).toBeDefined();
     expect(queryResult.rows[0]).toMatchObject({
-      title: "Updated Title",
+      title: "Updated Title"
     });
   });
 
@@ -64,8 +64,8 @@ describe("Repository Update", () => {
       where: eq("id", targetUser.id),
       data: {
         name: "Updated Name",
-        age: 30,
-      },
+        age: 30
+      }
     });
     const updatedUser = updatedUserResponse?.rows[0];
     expect(updatedUser).toBeDefined();
@@ -75,12 +75,12 @@ describe("Repository Update", () => {
     // Make sure also updated in the database
     const fetchedUser = await executor.executeSQL<DomainUser>(
       `SELECT * from users WHERE id = $1`,
-      [targetUser.id],
+      [targetUser.id]
     );
     expect(fetchedUser).toBeDefined();
     expect(fetchedUser?.rows[0]).toMatchObject({
       name: "Updated Name",
-      age: 30,
+      age: 30
     });
   });
 
@@ -88,17 +88,17 @@ describe("Repository Update", () => {
     const result = await postRepository.update({
       where: like("title", "%post-not-exists%"),
       data: {
-        title: "Non-existent Post",
-      },
+        title: "Non-existent Post"
+      }
     });
-    expect(result.rowCount).toBe(0)
+    expect(result.rowCount).toBe(0);
   });
 
   it("should not update fields that are not provided", async () => {
     const targetUser = users[1];
     const fetchedUsers = await executor.executeSQL<DomainUser>(
       `SELECT * FROM users WHERE id = $1`,
-      [targetUser.id],
+      [targetUser.id]
     );
     const originalUser = fetchedUsers.rows[0];
     expect(originalUser).toBeDefined();
@@ -106,8 +106,8 @@ describe("Repository Update", () => {
     const updatedUserResponse = await userRepository.update({
       where: eq("id", targetUser.id),
       data: {
-        name: "Partially Updated Name",
-      },
+        name: "Partially Updated Name"
+      }
     });
     const updatedUser = updatedUserResponse?.rows[0];
     expect(updatedUser).toBeDefined();

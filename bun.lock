@@ -13,6 +13,20 @@
         "prettier": "^3.5.3",
         "ts-jest": "^29.3.2",
       },
+      "peerDependencies": {
+        "better-sqlite3": "",
+        "mysql": "^2.18.1",
+        "mysql2": "^3.14.1",
+        "pg": "^8.16.0",
+        "sqlite3": "^5.1.7",
+      },
+      "optionalPeers": [
+        "better-sqlite3",
+        "mysql",
+        "mysql2",
+        "pg",
+        "sqlite3",
+      ],
     },
   },
   "packages": {

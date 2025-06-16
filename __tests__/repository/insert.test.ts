@@ -3,7 +3,7 @@ import {
   cleanupTestData,
   executor,
   DomainUser
-} from "../../test-setup";
+} from "../test-setups/pg-test-setup";
 import { Repository } from "../../src";
 
 describe("Repository - insert", () => {

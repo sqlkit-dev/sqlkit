@@ -20,7 +20,7 @@ import {
   DomainUser,
   executor,
   setupTestTables
-} from "../../test-setup";
+} from "../test-setups/pg-test-setup";
 
 describe("Repository findRows", () => {
   let repository: Repository<DomainUser>;

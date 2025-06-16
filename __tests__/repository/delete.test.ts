@@ -2,8 +2,8 @@ import {
   setupTestTables,
   cleanupTestData,
   executor,
-  DomainUser,
-} from "../../test-setup";
+  DomainUser
+} from "../test-setups/pg-test-setup";
 import { Repository, SimpleWhere, CompositeWhere, eq } from "../../src";
 
 describe("Repository - Delete", () => {
@@ -26,15 +26,15 @@ describe("Repository - Delete", () => {
     it("should delete all records when no where condition is provided", async () => {
       await executor.executeSQL(
         `INSERT INTO users (name, email, age) VALUES ($1, $2, $3)`,
-        ["John Doe", "john@example.com", 30],
+        ["John Doe", "john@example.com", 30]
       );
 
       await executor.executeSQL(
         `INSERT INTO users (name, email, age) VALUES ($1, $2, $3)`,
-        ["Jane Smith", "jane@example.com", 25],
+        ["Jane Smith", "jane@example.com", 25]
       );
 
-      expect(1).toBe(1)
+      expect(1).toBe(1);
 
       // const result = await repository.delete({ where: {} });
 

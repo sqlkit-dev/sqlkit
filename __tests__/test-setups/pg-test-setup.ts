@@ -1,13 +1,13 @@
 import { faker } from "@faker-js/faker";
 import * as pg from "pg";
-import { PostgresAdapter, Table } from "./src";
+import { PostgresAdapter, Table } from "../../src";
 import {
   integer,
   text,
   timestamp,
   uuid,
-  varchar,
-} from "./src/types/column-type";
+  varchar
+} from "../../src/types/column-type";
 
 // Test database configuration
 const TEST_DB_CONFIG = {
@@ -15,7 +15,7 @@ const TEST_DB_CONFIG = {
   port: parseInt(process.env.TEST_DB_PORT || "5432"),
   database: process.env.TEST_DB_NAME || "tinyorm_test",
   user: process.env.TEST_DB_USER || "rayhan",
-  password: process.env.TEST_DB_PASSWORD || "rayhan123",
+  password: process.env.TEST_DB_PASSWORD || "rayhan123"
 };
 
 // Create a real executor for testing
@@ -38,7 +38,7 @@ export async function setupTestTables() {
   postTable.column("author_id", uuid()).notNull().references({
     table: "users",
     column: "id",
-    onDelete: "CASCADE",
+    onDelete: "CASCADE"
   });
 
   const tagTable = new Table<any>("tags");
@@ -49,12 +49,12 @@ export async function setupTestTables() {
   articleTagPivotTable.column("post_id", uuid()).notNull().references({
     table: "posts",
     column: "id",
-    onDelete: "CASCADE",
+    onDelete: "CASCADE"
   });
   articleTagPivotTable.column("tag_id", uuid()).notNull().references({
     table: "tags",
     column: "id",
-    onDelete: "CASCADE",
+    onDelete: "CASCADE"
   });
   await cleanupTestTables();
 
@@ -78,7 +78,7 @@ export async function cleanupTestTables() {
     DROP TABLE IF EXISTS tags CASCADE;
     DROP TABLE IF EXISTS post_tag_pivot CASCADE;
   `,
-    [],
+    []
   );
 }
 
@@ -91,7 +91,7 @@ export async function cleanupTestData() {
     TRUNCATE TABLE tags CASCADE;
     TRUNCATE TABLE post_tag_pivot CASCADE;
   `,
-    [],
+    []
   );
 }
 
@@ -105,8 +105,8 @@ export async function seedTestData() {
         faker.person.fullName(),
         faker.internet.email(),
         faker.number.int({ min: 18, max: 99 }),
-        faker.lorem.sentence(),
-      ],
+        faker.lorem.sentence()
+      ]
     );
   });
   await Promise.all(userInsertPromises);
@@ -121,7 +121,7 @@ export async function seedTestData() {
     return Array.from({ length: postCount }).map(() => {
       return executor.executeSQL(
         `INSERT INTO posts (title, content, author_id) VALUES ($1, $2, $3)`,
-        [faker.lorem.words(3), faker.lorem.paragraph(), userId],
+        [faker.lorem.words(3), faker.lorem.paragraph(), userId]
       );
     });
   });
@@ -130,7 +130,7 @@ export async function seedTestData() {
   // Seed tags
   const tagInsertPromises = Array.from({ length: 5 }).map(() => {
     return executor.executeSQL(`INSERT INTO tags (title) VALUES ($1)`, [
-      faker.lorem.word(),
+      faker.lorem.word()
     ]);
   });
   await Promise.all(tagInsertPromises);
@@ -148,7 +148,7 @@ export async function seedTestData() {
     return selectedTags.map((tagId: any) => {
       return executor.executeSQL(
         `INSERT INTO post_tag_pivot (post_id, tag_id) VALUES ($1, $2)`,
-        [postId, tagId],
+        [postId, tagId]
       );
     });
   });
