@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        database: [postgres, mysql]
+        database: [postgres, mysql, sqlite]
     services:
       postgres:
         image: postgres:latest
@@ -69,3 +69,9 @@ jobs:
           MYSQL_TEST_DB_NAME: sqlkit_test
           MYSQL_TEST_DB_USER: root
           MYSQL_TEST_DB_PASSWORD: password
+
+      - name: Run SQLite tests
+        if: matrix.database == 'sqlite'
+        run: npm run test:sqlite
+        env:
+          SQLITE_TEST_DB_PATH: ./test.db
