@@ -66,6 +66,7 @@ export class Repository<T> {
     if (options.orderBy) builder.orderBy(options.orderBy);
     if (options.limit) builder.limit(options.limit);
     if (options.offset) builder.offset(options.offset);
+    if (options.columns) builder.select(options.columns);
     return builder.paginate(options);
   }
 
@@ -86,10 +87,16 @@ export class Repository<T> {
 
   async insert(
     data: Partial<T>[],
-    returning: Array<keyof T> = ["*"] as any
+    returning?: Array<keyof T>
   ): Promise<QueryResult<T>> {
     const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
-    const result = await builder.values(data).returning(returning).commit();
+    const cursor = builder.values(data);
+
+    if (returning) {
+      cursor.returning(returning);
+    }
+    const result = await cursor.commit();
+
     if (this.options?.logging) {
       console.log({
         sql: builder.build().sql,
