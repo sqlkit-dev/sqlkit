@@ -1,6 +1,6 @@
 {
   "name": "sqlkit",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "A lightweight SQL builder for TypeScript",
   "license": "MIT",
   "author": {
@@ -21,11 +21,7 @@
   "scripts": {
     "build": "pkgroll --sourcemap --clean-dist --minify",
     "tinker": "npx tsx watch src/tinker.ts",
-    "test": "jest --runInBand",
-    "test:postgres": "jest --testPathPattern=repository --runInBand",
-    "test:sqlite": "jest --testPathPattern=sqlite-repository --runInBand",
-    "test:mysql": "jest --testPathPattern=mysql-repository --runInBand",
-    "test:dialects": "jest --testPathPattern=dialects --runInBand",
+    "test": "jest --testPathPattern=repository --runInBand",
     "format": "prettier --write \"src/**/*.ts\"",
     "docs": "npx typedoc src/index.ts"
   },

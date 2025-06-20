@@ -37,7 +37,9 @@ describe("Repository findRows", () => {
   describe("Comparison Operators", () => {
     it("should find rows with neq operator", async () => {
       const result = await repository.find({
-        where: neq("email", "test-not-exists@example.com")
+        operationName: "Comparison Operators",
+        where: neq("email", "test-not-exists@example.com"),
+        columns: ["id", "name", "email"]
       });
 
       expect(result.every((user) => user.email !== "test@example.com")).toBe(

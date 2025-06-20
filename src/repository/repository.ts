@@ -34,6 +34,7 @@ export class Repository<T> {
     if (payload?.orderBy) builder.orderBy(payload.orderBy);
     if (payload?.limit) builder.limit(payload.limit);
     if (payload?.offset) builder.offset(payload.offset);
+    if (payload?.columns) builder.select(payload.columns);
 
     const result = await builder.commit();
 

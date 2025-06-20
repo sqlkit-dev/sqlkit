@@ -1,0 +1,4 @@
+ "test:postgres": "jest --testPathPattern=repository --runInBand",
+    "test:sqlite": "jest --testPathPattern=sqlite-repository --runInBand",
+    "test:mysql": "jest --testPathPattern=mysql-repository --runInBand",
+    "test:dialects": "jest --testPathPattern=dialects --runInBand",
