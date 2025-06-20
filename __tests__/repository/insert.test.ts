@@ -12,7 +12,7 @@ describe("Repository - insert", () => {
   beforeAll(async () => {
     await setupTestTables();
     repository = new Repository("users", executor, {
-      logging: true
+      // logging: true
     });
   });
 
