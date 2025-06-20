@@ -45,7 +45,7 @@ export interface Join<T, F> {
   columns?: Array<keyof F>;
 }
 
-export interface ManyToManyJoin<Pivot,Foreign> {
+export interface ManyToManyJoin<Pivot, Foreign> {
   table: string;
   as?: string;
   on: {
@@ -56,6 +56,7 @@ export interface ManyToManyJoin<Pivot,Foreign> {
 }
 
 export interface QueryRowsPayload<T> {
+  operationName?: string;
   where?: WhereCondition<T>;
   joins?: Join<T, any>[];
   with?: ManyToManyJoin<any, any>[];

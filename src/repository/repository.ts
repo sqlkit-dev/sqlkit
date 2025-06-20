@@ -39,6 +39,7 @@ export class Repository<T> {
 
     if (this.options?.logging) {
       console.log({
+        operationName: payload.operationName,
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
@@ -105,6 +106,7 @@ export class Repository<T> {
     where: WhereCondition<T>;
     data: Partial<T>;
     returning?: Array<keyof T>;
+    operationName?: string;
   }): Promise<QueryResult<T>> {
     const { where, data, returning = ["*"] as any } = args;
 
@@ -117,6 +119,7 @@ export class Repository<T> {
 
     if (this.options?.logging) {
       console.log({
+        operationName: args.operationName,
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
@@ -129,17 +132,19 @@ export class Repository<T> {
     return result;
   }
 
-  async delete(arg: {
+  async delete(args: {
     where: WhereCondition<T>;
     returning?: Array<keyof T>;
+    operationName?: string;
   }): Promise<QueryResult<T> | null> {
     const builder = new DeleteQueryBuilder<T>(this.tableName, this.executor);
     const result = await builder
-      .where(arg.where)
-      .returning(arg.returning)
+      .where(args.where)
+      .returning(args.returning)
       .commit();
     if (this.options?.logging) {
       console.log({
+        operationName: args.operationName,
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
