@@ -56,7 +56,7 @@ const executor = new PostgresAdapter(pool);
 
 const builder = new SelectQueryBuilder<User>("users", executor);
 
-const users = await builder
+const { rows: users } = await builder
   .select(["id", "name"])
   .where({ key: "age", operator: ">", value: 18 })
   // OR .where(eq("age", 18))
@@ -69,8 +69,7 @@ console.log(users);
 ### 3. Repository API 🔥
 
 ```ts
-import { Repository, gt, like, and } from "sqlkit";
-import { PostgresAdapter } from "sqlkit";
+import { Repository, PostgresAdapter, gt, like, and, asc } from "sqlkit";
 import { Pool } from "pg";
 
 const pool = new Pool({
@@ -84,11 +83,10 @@ const users = await userRepo.find({
   where: and(gt("age", 25), like("name", "%Doe%")),
 });
 
-// Paginate
+// Paginate (offset is derived from page and limit inside paginate)
 const result = await userRepo.paginate({
   page: 1,
   limit: 10,
-  offset: 2,
   where: gt("age", 18),
   columns: ["age", "email"],
   orderBy: [asc("age")],
@@ -99,32 +97,37 @@ console.log(result.meta);
 /*
 {
   totalCount: 100,
-  currentPage: 2,
+  currentPage: 1,
   totalPages: 10,
   hasNextPage: true
 }
 */
 
-// Find one
-const user = await userRepo.find(like("email", "%@example.com"));
+// Find one (find always returns an array)
+const [user] = await userRepo.find({
+  where: like("email", "%@example.com"),
+  limit: 1,
+});
 
 // Count
 const count = await userRepo.count(gt("age", 30));
 
-// Insert
-const newUser = await userRepo.insert({
-  name: "Rayhan",
-  email: "ray@example.com",
-});
+// Insert (accepts an array of rows; returns QueryResult)
+const insertResult = await userRepo.insert([
+  { name: "Rayhan", email: "ray@example.com" },
+]);
+// insertResult.rows[0] — inserted row(s)
 
 // Update
-const updated = await userRepo.update(
-  { name: "Ray" },
-  like("email", "%ray%"),
-);
+const updated = await userRepo.update({
+  data: { name: "Ray" },
+  where: like("email", "%ray%"),
+});
 
 // Delete
-const deleted = await userRepo.delete(like("name", "Ray%"));
+const deleted = await userRepo.delete({
+  where: like("name", "Ray%"),
+});
 ```
 
 ### 🔍 Supported Operators
