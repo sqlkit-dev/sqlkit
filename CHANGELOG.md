@@ -1,5 +1,41 @@
 # Changelog
 
+## 2.0.0 — 2025-06-25
+
+Repository configuration overhaul: single config object, optional read/write table split for views.
+
+### Breaking Changes
+
+- **`Repository` constructor** — pass one config object instead of positional arguments.
+
+  ```ts
+  // Before (1.x)
+  new Repository("users", executor, { logging: true });
+
+  // After (2.x)
+  new Repository({ tableName: "users", executor, logging: true });
+  ```
+
+- **`RepositoryOptions` removed** — `logging` and `executor` live on `RepositoryConfig` alongside `tableName`.
+
+### Features
+
+- **`mutableTableName`** — read from a view (`tableName`) while inserting, updating, and deleting against a base table. Omit it to use `tableName` for all operations.
+
+  ```ts
+  new Repository({
+    tableName: "inventory__v_items",
+    mutableTableName: "inventory_items",
+    executor,
+  });
+  ```
+
+### Internal
+
+- Publish workflow uses `actions/setup-node` so `NPM_TOKEN` auth applies correctly in CI.
+
+**Full changelog:** https://github.com/sqlkit-dev/sqlkit/compare/1.0.19...HEAD
+
 ## 1.0.19 — 2025-06-25
 
 Fix npm package entry points so TypeScript consumers resolve `dist/` types instead of unpublished `src/` sources.

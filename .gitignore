@@ -1,11 +1,9 @@
 /dist
 packages/*/dist
+packages/sqlkit/docs
 apps/*/dist
 .DS_Store
 node_modules
 bun.lockb
 package-lock.json
 .env*
-
-
-*E.md

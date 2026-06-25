@@ -1,6 +1,6 @@
 {
   "name": "sqlkit",
-  "version": "1.0.19",
+  "version": "2.0.0",
   "description": "TypeScript query builder and repository layer for PostgreSQL",
   "license": "MIT",
   "author": {
@@ -32,7 +32,7 @@
     "tinker": "bun --watch src/tinker.ts",
     "test": "jest --testPathPattern=repository --runInBand",
     "format": "prettier --write \"src/**/*.ts\"",
-    "docs": "npx typedoc src/index.ts"
+    "docs": "npx typedoc src/index.ts --readme README.md --out ../../docs",
   },
   "keywords": [
     "sql",

@@ -44,4 +44,6 @@ Copy `apps/playground/.env.example` to `apps/playground/.env` if you need non-de
 
 The publishable package lives in `packages/sqlkit`. Release CI builds and publishes from that workspace.
 
+**Current major version:** 2.x — `Repository` uses a config object; see [CHANGELOG.md](./CHANGELOG.md) for migration from 1.x.
+
 Library usage docs: [packages/sqlkit/README.md](./packages/sqlkit/README.md) · [API docs](https://sqlkit-dev.github.io/sqlkit/)
