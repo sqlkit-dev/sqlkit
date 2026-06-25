@@ -14,7 +14,7 @@ describe("Repository - Delete", () => {
   });
 
   beforeEach(async () => {
-    repository = new Repository<DomainUser>("users", executor);
+    repository = new Repository<DomainUser>({ tableName: "users", executor });
     await cleanupTestData();
   });
 

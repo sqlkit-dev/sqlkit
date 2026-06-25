@@ -15,7 +15,7 @@ describe("Repository count", () => {
   });
 
   beforeEach(async () => {
-    repository = new Repository("users", executor);
+    repository = new Repository({ tableName: "users", executor });
     await cleanupTestData();
   });
   afterAll(async () => {

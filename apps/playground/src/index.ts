@@ -1,39 +1,54 @@
-// @ts-nocheck
-import { asc, gt, Repository } from "sqlkit";
+import { eq, Repository } from "sqlkit";
 import { executor } from "./setup";
+
+export class InventoryItem {
+  id: string;
+
+  code: string;
+
+  name: string;
+
+  category: string;
+
+  unit: string;
+
+  usage_type: string;
+
+  reorder_level?: number;
+
+  default_issue_template_id?: string;
+
+  is_active: boolean;
+
+  created_at?: Date;
+
+  updated_at?: Date;
+
+  stock_qty?: number;
+
+  stock_value?: number;
+}
 
 async function main() {
   console.log("sqlkit playground — connecting to PostgreSQL…\n");
 
-  const userRoleRepo = new Repository("identity__userRoles", executor, {
+  const repo = new Repository<InventoryItem>({
+    tableName: "inventory__v_items",
+    mutableTableName: "inventory__items",
     logging: true,
+    executor,
   });
 
-  const data = await userRoleRepo.paginate({
+  await repo.update({
+    where: eq("id", "8c8ee1d0-a17a-41ec-8399-71064041c400"),
+    data: {
+      code: "testssss",
+    },
+  });
+
+  const data = await repo.paginate({
     page: 1,
-    limit: 10,
-    joins: [
-      {
-        table: "identity__users",
-        type: "left",
-        columns: ["id", "email"],
-        on: {
-          localField: "user_id",
-          foreignField: "id",
-        },
-        as: "user",
-      },
-      {
-        table: "identity__roles",
-        type: "left",
-        columns: ["id", "name"],
-        on: {
-          localField: "role_id",
-          foreignField: "id",
-        },
-        as: "role",
-      },
-    ],
+    limit: 2,
   });
 
   console.log(JSON.stringify(data, null, 2));

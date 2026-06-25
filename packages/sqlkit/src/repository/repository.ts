@@ -14,19 +14,30 @@ import {
 } from "../types";
 import { buildWhereClause, quoteTableName } from "../utils";
 
-export interface RepositoryOptions {
+export interface RepositoryConfig {
+  /** Table or view used for reads (find, findOne, paginate, count). */
+  tableName: string;
+  /** Base table for insert, update, and delete. Defaults to `tableName`. */
+  mutableTableName?: string;
   logging?: boolean;
+  executor: SqlExecutor;
 }
 
 export class Repository<T> {
-  constructor(
-    protected readonly tableName: string,
-    protected readonly executor: SqlExecutor,
-    protected options?: RepositoryOptions
-  ) {}
+  protected readonly readTable: string;
+  protected readonly writeTable: string;
+  protected readonly executor: SqlExecutor;
+  protected readonly logging: boolean;
+
+  constructor(config: RepositoryConfig) {
+    this.readTable = config.tableName;
+    this.writeTable = config.mutableTableName ?? config.tableName;
+    this.executor = config.executor;
+    this.logging = config.logging ?? false;
+  }
 
   async find(payload?: QueryRowsPayload<T>): Promise<T[]> {
-    const builder = new SelectQueryBuilder<T>(this.tableName, this.executor);
+    const builder = new SelectQueryBuilder<T>(this.readTable, this.executor);
     if (payload?.where) builder.where(payload.where);
     if (payload?.joins) {
       payload.joins.forEach((join) => builder.join(join));
@@ -38,7 +49,7 @@ export class Repository<T> {
 
     const result = await builder.commit();
 
-    if (this.options?.logging) {
+    if (this.logging) {
       console.log({
         operationName: payload?.operationName,
         sql: builder.build().sql,
@@ -91,7 +102,7 @@ export class Repository<T> {
    * @param options
    */
   paginate(options: PaginationOptions<T>): Promise<PaginatedResult<T>> {
-    const builder = new SelectQueryBuilder<T>(this.tableName, this.executor);
+    const builder = new SelectQueryBuilder<T>(this.readTable, this.executor);
     if (options.where) builder.where(options.where);
     if (options.joins) {
       options.joins.forEach((join) => builder.join(join));
@@ -104,11 +115,11 @@ export class Repository<T> {
   }
 
   async count(where?: WhereCondition<T>): Promise<number> {
-    const { whereClause, values } = buildWhereClause(where, this.tableName);
+    const { whereClause, values } = buildWhereClause(where, this.readTable);
 
     const query = `
       SELECT COUNT(*) as count
-      FROM ${quoteTableName(this.tableName)}
+      FROM ${quoteTableName(this.readTable)}
       ${whereClause ? `WHERE ${whereClause}` : ""};
     `;
 
@@ -122,7 +133,7 @@ export class Repository<T> {
     returning?: Array<keyof T>
   ): Promise<QueryResult<T>> {
     const rows = Array.isArray(data) ? data : [data];
-    const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
+    const builder = new InsertQueryBuilder<T>(this.writeTable, this.executor);
     const cursor = builder.values(rows);
 
     if (returning) {
@@ -130,7 +141,7 @@ export class Repository<T> {
     }
     const result = await cursor.commit();
 
-    if (this.options?.logging) {
+    if (this.logging) {
       console.log({
         sql: builder.build().sql,
         values: builder.build().values,
@@ -151,14 +162,14 @@ export class Repository<T> {
   }): Promise<QueryResult<T>> {
     const { where, data, returning = ["*"] as any } = args;
 
-    const builder = new UpdateQueryBuilder<T>(this.tableName, this.executor);
+    const builder = new UpdateQueryBuilder<T>(this.writeTable, this.executor);
     const result = await builder
       .set(data)
       .where(where)
       .returning(returning)
       .commit();
 
-    if (this.options?.logging) {
+    if (this.logging) {
       console.log({
         operationName: args.operationName,
         sql: builder.build().sql,
@@ -178,12 +189,12 @@ export class Repository<T> {
     returning?: Array<keyof T>;
     operationName?: string;
   }): Promise<QueryResult<T> | null> {
-    const builder = new DeleteQueryBuilder<T>(this.tableName, this.executor);
+    const builder = new DeleteQueryBuilder<T>(this.writeTable, this.executor);
     const result = await builder
       .where(args.where)
       .returning(args.returning)
       .commit();
-    if (this.options?.logging) {
+    if (this.logging) {
       console.log({
         operationName: args.operationName,
         sql: builder.build().sql,

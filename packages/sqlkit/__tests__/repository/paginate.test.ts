@@ -15,8 +15,8 @@ describe("Repository Pagination", () => {
   beforeAll(async () => {
     await setupTestTables();
     await seedTestData();
-    postRepository = new Repository<DomainPost>("posts", executor);
-    userRepository = new Repository<DomainUser>("users", executor);
+    postRepository = new Repository<DomainPost>({ tableName: "posts", executor });
+    userRepository = new Repository<DomainUser>({ tableName: "users", executor });
   });
 
   afterAll(async () => {

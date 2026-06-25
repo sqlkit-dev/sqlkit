@@ -18,8 +18,8 @@ describe("Repository Update", () => {
   beforeAll(async () => {
     await setupTestTables();
     await seedTestData();
-    postRepository = new Repository<DomainPost>("posts", executor);
-    userRepository = new Repository<DomainUser>("users", executor);
+    postRepository = new Repository<DomainPost>({ tableName: "posts", executor });
+    userRepository = new Repository<DomainUser>({ tableName: "users", executor });
 
     const fetchedRows = await Promise.all([
       executor.executeSQL(`SELECT * FROM posts`, []),

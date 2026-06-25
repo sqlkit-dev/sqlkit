@@ -4,9 +4,9 @@ Bun workspaces monorepo for [sqlkit](https://github.com/sqlkit-dev/sqlkit) — a
 
 ## Workspace layout
 
-| Path | Package | Description |
-| --- | --- | --- |
-| `packages/sqlkit` | `sqlkit` | Library source, tests, and build |
+| Path              | Package              | Description                                 |
+| ----------------- | -------------------- | ------------------------------------------- |
+| `packages/sqlkit` | `sqlkit`             | Library source, tests, and build            |
 | `apps/playground` | `@sqlkit/playground` | Local dev app exercising the repository API |
 
 ## Quick start
@@ -32,13 +32,13 @@ Copy `apps/playground/.env.example` to `apps/playground/.env` if you need non-de
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `bun dev` | mprocs tabbed UI — playground + sqlkit tinker |
-| `bun test` | Run repository integration tests |
-| `bun run build` | Build `sqlkit` for npm (`dist/`) |
-| `bun run format` | Prettier on library source |
-| `bun run docs` | Generate Typedoc into `docs/` |
+| Command          | Description                                   |
+| ---------------- | --------------------------------------------- |
+| `bun dev`        | mprocs tabbed UI — playground + sqlkit tinker |
+| `bun test`       | Run repository integration tests              |
+| `bun run build`  | Build `sqlkit` for npm (`dist/`)              |
+| `bun run format` | Prettier on library source                    |
+| `bun run docs`   | Generate Typedoc into `docs/`                 |
 
 ## Publishing
 

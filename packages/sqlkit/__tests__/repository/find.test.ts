@@ -28,7 +28,9 @@ describe("Repository findRows", () => {
 
   beforeAll(async () => {
     await setupTestTables();
-    repository = new Repository("users", executor, {
+    repository = new Repository({
+      tableName: "users",
+      executor,
       // logging: true
     });
   });
