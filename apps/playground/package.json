@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "bun run --filter sqlkit build",
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts"
   },

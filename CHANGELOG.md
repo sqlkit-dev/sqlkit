@@ -2,7 +2,13 @@
 
 ## 1.0.19 — 2025-06-25
 
-Hotfix: restore published package entry points to `dist/` so TypeScript consumers resolve `SqlExecutor`, `eq`, `PostgresAdapter`, and other exports correctly. v1.0.18 accidentally shipped with `main`/`types` pointing at `src/`.
+Fix npm package entry points so TypeScript consumers resolve `dist/` types instead of unpublished `src/` sources.
+
+### Fixes
+
+- **`main` / `types` / `module` / `exports`** — point at `dist/index.*` (removed broken `publishConfig` + `src/index.ts` dev entries that were published as-is in 1.0.18).
+- **`files`** — tarball no longer includes `src/index.ts`; only `dist/` is shipped.
+- **`prepublishOnly`** — runs `build` before every `npm publish`.
 
 ## 1.0.18 — 2025-06-25
 

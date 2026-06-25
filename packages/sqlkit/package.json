@@ -19,7 +19,8 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
     }
   },
   "files": [
@@ -27,7 +28,7 @@
   ],
   "scripts": {
     "build": "pkgroll --sourcemap --clean-dist --minify",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "bun run build",
     "tinker": "bun --watch src/tinker.ts",
     "test": "jest --testPathPattern=repository --runInBand",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -57,7 +58,7 @@
   },
   "peerDependenciesMeta": {
     "pg": {
-      "optional": false
+      "optional": true
     }
   }
 }
