@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.19 — 2025-06-25
+
+Hotfix: restore published package entry points to `dist/` so TypeScript consumers resolve `SqlExecutor`, `eq`, `PostgresAdapter`, and other exports correctly. v1.0.18 accidentally shipped with `main`/`types` pointing at `src/`.
+
 ## 1.0.18 — 2025-06-25
 
 PostgreSQL-focused release with a richer repository API, clearer npm packaging, and a contributor-friendly monorepo layout.

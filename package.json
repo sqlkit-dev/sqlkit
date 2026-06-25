@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "mprocs",
+    "dev": "bun run build && mprocs",
     "build": "bun run --filter sqlkit build",
     "test": "bun run --filter sqlkit test",
     "format": "bun run --filter sqlkit format",
