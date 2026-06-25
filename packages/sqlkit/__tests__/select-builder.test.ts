@@ -164,7 +164,7 @@ describe("SelectQueryBuilder", () => {
         `LEFT JOIN "roles" AS "roles" ON "roles"."id" = "users"."roleId"`,
       );
       expect(result.sql).toContain(
-        `json_build_object('name', "roles"."name", 'description', "roles"."description") AS roles`,
+        `json_build_object('name', "roles"."name", 'description', "roles"."description") AS "roles"`,
       );
       expect(result.values).toEqual([]);
     });

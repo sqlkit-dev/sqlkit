@@ -36,7 +36,7 @@ describe("InsertQueryBuilder", () => {
         .build();
 
       expect(result.sql).toContain(
-        'INSERT INTO users ("name", "email", "age")',
+        'INSERT INTO "users" ("name", "email", "age")',
       );
       expect(result.sql).toContain("VALUES ($1, $2, $3)");
       expect(result.sql).toContain(`RETURNING *`);
@@ -82,7 +82,7 @@ describe("InsertQueryBuilder", () => {
         .returning(["id", "name"])
         .build();
 
-      expect(result.sql).toContain("INSERT INTO users (name, email, age)");
+      expect(result.sql).toContain('INSERT INTO "users" ("name", "email", "age")');
       expect(result.sql).toContain("VALUES ($1, $2, $3), ($4, $5, $6)");
       expect(result.values).toEqual([
         mockUsers[0].name,
@@ -106,7 +106,7 @@ describe("InsertQueryBuilder", () => {
         },
       ];
       const result = builder.values(mockUsers).build();
-      expect(result.sql).toContain("INSERT INTO users (name, email, age)");
+      expect(result.sql).toContain('INSERT INTO "users" ("name", "email", "age")');
       expect(result.sql).toContain("VALUES ($1, $2, $3), ($4, $5, $6)");
       expect(result.values).toEqual([
         mockUsers[0].name,

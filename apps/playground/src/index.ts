@@ -1,35 +1,42 @@
+// @ts-nocheck
 import { asc, gt, Repository } from "sqlkit";
-import { executor, seedUsers, setupTables, type User } from "./setup";
+import { executor } from "./setup";
 
 async function main() {
   console.log("sqlkit playground — connecting to PostgreSQL…\n");
 
-  await setupTables();
-  await seedUsers();
-
-  const userRepo = new Repository<User>("users", executor);
-
-  const adults = await userRepo.find({
-    where: gt("age", 20),
-    orderBy: [asc("age")],
-    columns: ["name", "email", "age"]
+  const userRoleRepo = new Repository("identity__userRoles", executor, {
+    logging: true,
   });
 
-  console.log("Users older than 20:");
-  console.table(adults);
-
-  const page = await userRepo.paginate({
+  const data = await userRoleRepo.paginate({
     page: 1,
-    limit: 2,
-    orderBy: [asc("name")]
+    limit: 10,
+    joins: [
+      {
+        table: "identity__users",
+        type: "left",
+        columns: ["id", "email"],
+        on: {
+          localField: "user_id",
+          foreignField: "id",
+        },
+        as: "user",
+      },
+      {
+        table: "identity__roles",
+        type: "left",
+        columns: ["id", "name"],
+        on: {
+          localField: "role_id",
+          foreignField: "id",
+        },
+        as: "role",
+      },
+    ],
   });
 
-  console.log("\nPaginated (page 1, limit 2):");
-  console.table(page.nodes);
-  console.log("meta:", page.meta);
-
-  const total = await userRepo.count(gt("age", 25));
-  console.log(`\nCount where age > 25: ${total}`);
+  console.log(JSON.stringify(data, null, 2));
 }
 
 main().catch((err) => {

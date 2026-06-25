@@ -5,7 +5,7 @@ apps/*/dist
 node_modules
 bun.lockb
 package-lock.json
-apps/playground/.env
+.env*
 
 
 *E.md

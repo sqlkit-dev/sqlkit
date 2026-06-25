@@ -1,4 +1,5 @@
 import { Column } from "./column";
+import { quoteTableName } from "../utils/formatting";
 
 export class Table<T> {
   readonly columns: Column[] = [];
@@ -16,6 +17,6 @@ export class Table<T> {
       .map((column) => column.toString())
       .join(",\n  ");
 
-    return `CREATE TABLE IF NOT EXISTS ${this.name} (\n  ${columnDefinitions}\n);`;
+    return `CREATE TABLE IF NOT EXISTS ${quoteTableName(this.name)} (\n  ${columnDefinitions}\n);`;
   }
 }

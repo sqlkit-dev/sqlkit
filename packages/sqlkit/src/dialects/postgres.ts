@@ -11,6 +11,11 @@ export class PostgresAdapter implements SqlExecutor {
 
   async executeSQL<T>(sql: string, values: unknown[]): Promise<QueryResult<T>> {
     return new Promise((resolve, reject) => {
+      console.log("executing query", {
+        sql,
+        values
+      });
+
       this.pgPool.query(sql, values as any[], (err, result) => {
         if (err) {
           reject(new SQLKITException(err.message, { cause: err }));

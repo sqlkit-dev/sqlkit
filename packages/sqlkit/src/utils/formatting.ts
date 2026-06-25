@@ -9,6 +9,13 @@ export function toSnakeCase(str: string): string {
 }
 
 /**
+ * Quote a table (or identifier) for case-sensitive PostgreSQL identifiers
+ */
+export function quoteTableName(tableName: string): string {
+  return `"${tableName}"`;
+}
+
+/**
  * Format a value for safe inclusion in SQL strings (for debugging/logging)
  */
 export function formatSqlValue(value: any): string {

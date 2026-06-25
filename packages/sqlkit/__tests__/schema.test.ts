@@ -42,7 +42,7 @@ describe("Schema and Table", () => {
       table.column("age", integer());
       table.column("createdAt", timestamp()).$defaultNOW();
       const sql = table.createTableSql();
-      expect(sql).toContain("CREATE TABLE IF NOT EXISTS users");
+      expect(sql).toContain('CREATE TABLE IF NOT EXISTS "users"');
       expect(sql).toContain(
         `"id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid()`,
       );
@@ -106,7 +106,7 @@ describe("Schema and Table", () => {
         .references({ table: "users", column: "id", onDelete: "CASCADE" });
 
       const sql = table.createTableSql();
-      expect(sql).toContain('"authorId" UUID REFERENCES users(id)');
+      expect(sql).toContain('"authorId" UUID REFERENCES "users"("id")');
     });
 
     it("should create a table with all constraints combined", () => {
@@ -166,7 +166,7 @@ describe("Schema and Table", () => {
       // );
 
       expect(postsSql).toContain(
-        `"authorId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE`,
+        `"authorId" UUID NOT NULL REFERENCES "users"("id") ON DELETE CASCADE`,
       );
       expect(postsSql).toContain(
         `"createdAt" TIMESTAMP NOT NULL DEFAULT 'now()'`,

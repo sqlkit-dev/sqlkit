@@ -1,5 +1,5 @@
 import {Join, ManyToManyJoin, OrderBy, SimpleWhere, WhereCondition} from "../types";
-import { toSnakeCase } from "./formatting";
+import { quoteTableName, toSnakeCase } from "./formatting";
 
 /**
  * Builds a WHERE clause for SQL queries
@@ -79,7 +79,7 @@ const processSimpleCondition = <T>(
 
   if (operator === "between" && Array.isArray(value)) {
     const [min, max] = value;
-    return `"${tableName}"."${key.toString()}" between ${min} AND ${max}`;
+    return `${quoteTableName(tableName)}."${key.toString()}" between ${min} AND ${max}`;
   }
 
   // Handle arrays for IN and NOT IN operators
@@ -93,21 +93,21 @@ const processSimpleCondition = <T>(
       .join(", ");
     value.forEach((v) => values.push(v));
 
-    return `"${tableName}"."${key.toString()}" ${operator} (${placeholders})`;
+    return `${quoteTableName(tableName)}."${key.toString()}" ${operator} (${placeholders})`;
   }
 
   // Handle NULL values
   if (value === null) {
     return operator === "="
-      ? `"${tableName}"."${key.toString()}" IS NULL`
+      ? `${quoteTableName(tableName)}."${key.toString()}" IS NULL`
       : operator === "<>"
-        ? `"${tableName}"."${key.toString()}" IS NOT NULL`
-        : `"${tableName}"."${key.toString()}" IS NULL`;
+        ? `${quoteTableName(tableName)}."${key.toString()}" IS NOT NULL`
+        : `${quoteTableName(tableName)}."${key.toString()}" IS NULL`;
   }
 
   // Standard case with non-null value
   values.push(value);
-  return `"${tableName}"."${key.toString()}" ${operator} $${values.length}`;
+  return `${quoteTableName(tableName)}."${key.toString()}" ${operator} $${values.length}`;
 };
 
 /**
@@ -134,7 +134,7 @@ export const buildOrderByClause = <T>(
     // Add NULLS LAST for better sorting behavior
     const nullsOrder = safeDirection === "DESC" ? "NULLS LAST" : "NULLS FIRST";
 
-    return `"${baseTableName}".${safeColumn} ${safeDirection} ${nullsOrder}`;
+    return `${quoteTableName(baseTableName!)}.${safeColumn} ${safeDirection} ${nullsOrder}`;
   });
 
   return `ORDER BY ${orderByConditions.join(", ")}`;
@@ -159,7 +159,7 @@ export const buildJoinClause = <T>(
     const alias = join.as || join.table;
     const foreignField = join.on.foreignField as any;
     const localField = join.on.localField as any;
-    return `${joinType} JOIN "${join.table}" AS "${alias}" ON "${alias}"."${foreignField}" = "${baseTableName}"."${localField}"`;
+    return `${joinType} JOIN ${quoteTableName(join.table)} AS ${quoteTableName(alias)} ON ${quoteTableName(alias)}."${foreignField}" = ${quoteTableName(baseTableName!)}."${localField}"`;
   });
 
   const joinSelectClause = joins
@@ -168,10 +168,10 @@ export const buildJoinClause = <T>(
 
       const alias = join.as || join.table;
       const jsonColumns = join.columns
-        .map((col) => `'${col.toString()}', "${alias}"."${col.toString()}"`)
+        .map((col) => `'${col.toString()}', ${quoteTableName(alias)}."${col.toString()}"`)
         .join(", ");
 
-      return `json_build_object(${jsonColumns}) AS ${alias}`;
+      return `json_build_object(${jsonColumns}) AS ${quoteTableName(alias)}`;
     })
     .filter(Boolean);
 

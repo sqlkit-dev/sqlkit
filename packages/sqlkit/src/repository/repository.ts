@@ -12,7 +12,7 @@ import {
   SqlExecutor,
   WhereCondition
 } from "../types";
-import { buildWhereClause } from "../utils";
+import { buildWhereClause, quoteTableName } from "../utils";
 
 export interface RepositoryOptions {
   logging?: boolean;
@@ -40,7 +40,7 @@ export class Repository<T> {
 
     if (this.options?.logging) {
       console.log({
-        operationName: payload.operationName,
+        operationName: payload?.operationName,
         sql: builder.build().sql,
         values: builder.build().values,
         result: {
@@ -108,7 +108,7 @@ export class Repository<T> {
 
     const query = `
       SELECT COUNT(*) as count
-      FROM ${this.tableName}
+      FROM ${quoteTableName(this.tableName)}
       ${whereClause ? `WHERE ${whereClause}` : ""};
     `;
 

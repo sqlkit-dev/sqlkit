@@ -43,7 +43,7 @@ export class InsertQueryBuilder<T> extends BaseQueryBuilder<T> {
       .join(", ");
 
     const sql = `
-      INSERT INTO ${this.tableName} (${columns})
+      INSERT INTO ${this.quotedTableName} (${columns})
       VALUES (${placeholders})
       RETURNING ${returning};
     `;
@@ -63,7 +63,9 @@ export class InsertQueryBuilder<T> extends BaseQueryBuilder<T> {
       Object.keys(data).forEach((key) => allKeys.add(key));
     });
 
-    const columns = Array.from(allKeys).map(toSnakeCase);
+    const columns = Array.from(allKeys)
+      .map(toSnakeCase)
+      .map((c) => `"${c}"`);
     const values: any[] = [];
 
     // Build value placeholders for each row
@@ -84,7 +86,7 @@ export class InsertQueryBuilder<T> extends BaseQueryBuilder<T> {
       .join(", ");
 
     const sql = `
-      INSERT INTO ${this.tableName} (${columns.join(", ")})
+      INSERT INTO ${this.quotedTableName} (${columns.join(", ")})
       VALUES ${valuePlaceholders}
       RETURNING ${returning};
     `;

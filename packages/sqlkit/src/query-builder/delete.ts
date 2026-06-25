@@ -27,7 +27,7 @@ export class DeleteQueryBuilder<T> extends BaseQueryBuilder<T> {
     const returning = this.returningColumns.join(", ");
 
     const sql = `
-      DELETE FROM "${this.tableName}"
+      DELETE FROM ${this.quotedTableName}
       ${whereClause ? `WHERE ${whereClause}` : ""}
       RETURNING ${returning};
     `;

@@ -1,3 +1,5 @@
+import { quoteTableName } from "../utils/formatting";
+
 export class Column {
   private _nullable: boolean = true;
   private _primaryKey: boolean = false;
@@ -99,7 +101,7 @@ export class Column {
     }
 
     if (this._references) {
-      definition += ` REFERENCES ${this._references.table}(${this._references.column}) ON DELETE ${this._references.onDelete ?? "SET NULL"}`;
+      definition += ` REFERENCES ${quoteTableName(this._references.table)}("${this._references.column}") ON DELETE ${this._references.onDelete ?? "SET NULL"}`;
     }
 
     return definition;

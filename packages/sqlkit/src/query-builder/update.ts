@@ -40,7 +40,7 @@ export class UpdateQueryBuilder<T> extends BaseQueryBuilder<T> {
 
     // Build final SQL query
     const sql = `
-      UPDATE "${this.tableName}"
+      UPDATE ${this.quotedTableName}
       SET ${setClause}
       ${whereClause ? `WHERE ${whereClause}` : ""}
       RETURNING ${returningColumns};
