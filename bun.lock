@@ -22,11 +22,11 @@
     },
     "packages/sqlkit": {
       "name": "sqlkit",
-      "version": "1.0.17",
+      "version": "1.0.19",
       "devDependencies": {
         "@faker-js/faker": "^9.7.0",
         "@types/jest": "^29.5.14",
-        "@types/pg": "^8.11.12",
+        "@types/pg": "^8.20.0",
         "jest": "^29.7.0",
         "pg": "^8.14.1",
         "pkgroll": "^2.12.1",
@@ -36,6 +36,9 @@
       "peerDependencies": {
         "pg": "^8.16.0",
       },
+      "optionalPeers": [
+        "pg",
+      ],
     },
   },
   "packages": {
@@ -796,6 +799,8 @@
     "p-locate/p-limit": ["p-limit@2.3.0", "", { "dependencies": { "p-try": "^2.0.0" } }, "sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w=="],
 
     "rollup-pluginutils/estree-walker": ["estree-walker@0.6.1", "", {}, "sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w=="],
+
+    "sqlkit/@types/pg": ["@types/pg@8.20.0", "", { "dependencies": { "@types/node": "*", "pg-protocol": "*", "pg-types": "^2.2.0" } }, "sha512-bEPFOaMAHTEP1EzpvHTbmwR8UsFyHSKsRisLIHVMXnpNefSbGA1bD6CVy+qKjGSqmZqNqBDV2azOBo8TgkcVow=="],
 
     "wrap-ansi/ansi-styles": ["ansi-styles@4.3.0", "", { "dependencies": { "color-convert": "^2.0.1" } }, "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg=="],
 

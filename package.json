@@ -10,7 +10,6 @@
     "build": "bun run --filter sqlkit build",
     "predev": "bun run build",
     "dev": "mprocs",
-    "build": "bun run --filter sqlkit build",
     "test": "bun run --filter sqlkit test",
     "format": "bun run --filter sqlkit format",
     "docs": "bun run --filter sqlkit docs"
