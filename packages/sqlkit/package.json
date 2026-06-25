@@ -32,7 +32,7 @@
     "tinker": "bun --watch src/tinker.ts",
     "test": "jest --testPathPattern=repository --runInBand",
     "format": "prettier --write \"src/**/*.ts\"",
-    "docs": "npx typedoc src/index.ts --readme README.md --out ../../docs",
+    "docs": "npx typedoc src/index.ts --readme README.md --out ../../docs"
   },
   "keywords": [
     "sql",
