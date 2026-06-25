@@ -17,25 +17,23 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U rayhan" 
-          --health-interval 10s 
-          --health-timeout 5s 
+          --health-cmd "pg_isready -U rayhan"
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
       - name: Run tests
-        run: npm test
+        run: bun run test
 
   publish:
     needs: test
@@ -43,24 +41,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
-      - name: Extract version from release tag
-        id: extract_version
-        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
-
-      - name: Build project
-        run: npm run build
+      - name: Build package
+        run: bun run --filter sqlkit build
 
       - name: Publish to npm
+        working-directory: packages/sqlkit
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

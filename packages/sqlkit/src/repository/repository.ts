@@ -14,7 +14,7 @@ import {
 } from "../types";
 import { buildWhereClause } from "../utils";
 
-interface RepositoryOptions {
+export interface RepositoryOptions {
   logging?: boolean;
 }
 
@@ -54,6 +54,39 @@ export class Repository<T> {
   }
 
   /**
+   * Return the first matching row, or null.
+   * Pass a where condition or a full query payload (must include `where`).
+   */
+  async findOne(
+    whereOrPayload:
+      | WhereCondition<T>
+      | (Omit<QueryRowsPayload<T>, "limit" | "offset"> & {
+          where: WhereCondition<T>;
+        })
+  ): Promise<T | null> {
+    let payload: QueryRowsPayload<T>;
+    if (
+      typeof whereOrPayload === "object" &&
+      whereOrPayload !== null &&
+      "where" in whereOrPayload
+    ) {
+      const p = whereOrPayload as Omit<
+        QueryRowsPayload<T>,
+        "limit" | "offset"
+      > & { where: WhereCondition<T> };
+      payload = { ...p, limit: 1 };
+    } else {
+      payload = {
+        where: whereOrPayload as WhereCondition<T>,
+        limit: 1
+      };
+    }
+
+    const rows = await this.find(payload);
+    return rows[0] ?? null;
+  }
+
+  /**
    * Paginate the result of a query
    * @param options
    */
@@ -70,10 +103,9 @@ export class Repository<T> {
     return builder.paginate(options);
   }
 
-  async count(where: WhereCondition<T>): Promise<number> {
+  async count(where?: WhereCondition<T>): Promise<number> {
     const { whereClause, values } = buildWhereClause(where, this.tableName);
 
-    // Construct the SQL query
     const query = `
       SELECT COUNT(*) as count
       FROM ${this.tableName}
@@ -86,11 +118,12 @@ export class Repository<T> {
   }
 
   async insert(
-    data: Partial<T>[],
+    data: Partial<T> | Partial<T>[],
     returning?: Array<keyof T>
   ): Promise<QueryResult<T>> {
+    const rows = Array.isArray(data) ? data : [data];
     const builder = new InsertQueryBuilder<T>(this.tableName, this.executor);
-    const cursor = builder.values(data);
+    const cursor = builder.values(rows);
 
     if (returning) {
       cursor.returning(returning);

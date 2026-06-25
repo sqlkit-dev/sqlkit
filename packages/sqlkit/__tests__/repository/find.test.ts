@@ -1,5 +1,6 @@
 import {
   between,
+  eq,
   gt,
   gte,
   ilike,
@@ -166,6 +167,46 @@ describe("Repository findRows", () => {
       });
 
       expect(result.every((user) => /^[a-z]/i.test(user.name))).toBe(true);
+    });
+  });
+
+  describe("findOne", () => {
+    beforeEach(async () => {
+      await cleanupTestData();
+    });
+
+    it("returns the first row for a where condition", async () => {
+      await executor.executeSQL(
+        `INSERT INTO users (name, email, age) VALUES ($1, $2, $3), ($4, $5, $6)`,
+        ["Alice", "alice@example.com", 30, "Bob", "bob@example.com", 31]
+      );
+
+      const user = await repository.findOne(eq("email", "alice@example.com"));
+
+      expect(user).toMatchObject({
+        name: "Alice",
+        email: "alice@example.com",
+        age: 30
+      });
+    });
+
+    it("returns null when no row matches", async () => {
+      const user = await repository.findOne(eq("email", "missing@example.com"));
+      expect(user).toBeNull();
+    });
+
+    it("accepts a full payload with where", async () => {
+      await executor.executeSQL(
+        `INSERT INTO users (name, email, age) VALUES ($1, $2, $3)`,
+        ["Zed", "zed@example.com", 20]
+      );
+
+      const user = await repository.findOne({
+        where: eq("email", "zed@example.com"),
+        columns: ["email", "name"]
+      });
+
+      expect(user).toEqual({ email: "zed@example.com", name: "Zed" });
     });
   });
 });

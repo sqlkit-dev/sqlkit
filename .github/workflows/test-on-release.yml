@@ -7,9 +7,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        database: [postgres, mysql, sqlite]
     services:
       postgres:
         image: postgres:latest
@@ -20,58 +17,26 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U rayhan" 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
-
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: sqlkit_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd "mysqladmin ping -h localhost"
+          --health-cmd "pg_isready -U rayhan"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 10
+          --health-retries 5
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
-      - name: Run PostgreSQL tests
-        if: matrix.database == 'postgres'
-        run: npm test
+      - name: Run tests
+        run: bun run test
         env:
           TEST_DB_HOST: localhost
           TEST_DB_PORT: 5432
           TEST_DB_NAME: tinyorm_test
           TEST_DB_USER: rayhan
           TEST_DB_PASSWORD: rayhan123
-
-      - name: Run MySQL tests
-        if: matrix.database == 'mysql'
-        run: npm test
-        env:
-          MYSQL_TEST_DB_HOST: localhost
-          MYSQL_TEST_DB_PORT: 3306
-          MYSQL_TEST_DB_NAME: sqlkit_test
-          MYSQL_TEST_DB_USER: root
-          MYSQL_TEST_DB_PASSWORD: password
-
-      - name: Run SQLite tests
-        if: matrix.database == 'sqlite'
-        run: npm run test:sqlite
-        env:
-          SQLITE_TEST_DB_PATH: ./test.db

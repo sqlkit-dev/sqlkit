@@ -1,0 +1,10 @@
+procs:
+  playground:
+    shell: bun run dev
+    cwd: ./apps/playground
+    color: green
+
+  sqlkit:
+    shell: bun run tinker
+    cwd: ./packages/sqlkit
+    color: blue

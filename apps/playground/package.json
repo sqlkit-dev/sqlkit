@@ -1,0 +1,17 @@
+{
+  "name": "@sqlkit/playground",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts"
+  },
+  "dependencies": {
+    "pg": "^8.14.1",
+    "sqlkit": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.12"
+  }
+}

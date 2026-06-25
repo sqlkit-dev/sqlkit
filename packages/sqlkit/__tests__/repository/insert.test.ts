@@ -20,6 +20,14 @@ describe("Repository - insert", () => {
     await cleanupTestData();
   });
 
+  it("should insert a single record when given one object", async () => {
+    const row = { name: "Solo User", email: "solo@example.com", age: 22 };
+    const result = await repository.insert(row);
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0]).toMatchObject(row);
+  });
+
   it("should insert multiple records into the database", async () => {
     const records = [
       { name: "John Doe", email: "john@example.com", age: 30 },

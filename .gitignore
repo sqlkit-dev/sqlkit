@@ -1,8 +1,11 @@
 /dist
+packages/*/dist
+apps/*/dist
 .DS_Store
 node_modules
 bun.lockb
 package-lock.json
+apps/playground/.env
 
 
 *E.md

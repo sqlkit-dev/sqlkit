@@ -4,5 +4,5 @@ export interface QueryResult<T = any> {
 }
 
 export interface SqlExecutor<T = any> {
-  executeSQL(sql: string, values: T[]): Promise<QueryResult<T>>;
+  executeSQL(sql: string, values: unknown[]): Promise<QueryResult<T>>;
 }

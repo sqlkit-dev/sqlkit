@@ -22,15 +22,24 @@ describe("Repository count", () => {
     await cleanupTestData();
   });
 
-  it("should count all rows without condition", async () => {
-    // Insert test data
+  it("should count all rows when where is omitted", async () => {
     await executor.executeSQL(
       `INSERT INTO users (name, email, age) VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`,
       ["John Doe", "john@example.com", 30, "Jane Doe", "jane@example.com", 25]
     );
 
-    const result = await repository.count(like("name", "%Doe%"));
+    const result = await repository.count();
     expect(result).toBe(2);
+  });
+
+  it("should count rows matching a pattern", async () => {
+    await executor.executeSQL(
+      `INSERT INTO users (name, email, age) VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`,
+      ["John Doe", "john@example.com", 30, "Jane Roe", "jane@example.com", 25]
+    );
+
+    const result = await repository.count(like("name", "%Doe%"));
+    expect(result).toBe(1);
   });
 
   it("should count rows with condition", async () => {
